@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>se.sics.ktoolbox.examples</groupId>
+    <artifactId>Examples</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>se.sics.ktoolbox.examples</groupId>
+  <artifactId>overlay-mngr</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Example OMngr</name>
+  <url>http://maven.apache.org</url>
+  
+    <properties>
+        <omngr.version>${original.omngr.version}</omngr.version>
+        <nat.version>${original.nat.version}</nat.version>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>se.sics.ktoolbox.overlaymngr</groupId>
+            <artifactId>core</artifactId>
+            <version>${omngr.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.sics.nat</groupId>
+            <artifactId>helper</artifactId>
+            <version>${nat.version}</version>
+        </dependency>
+    </dependencies>
+</project>
