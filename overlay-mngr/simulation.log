@@ -1,0 +1,348 @@
+[17:26:53,009] INFO  {OMngrLauncher} initiating...
+[17:26:53,013] INFO  {OMngrLauncher} starting
+[17:26:53,086] INFO  {IpSolverComp} initiating...
+[17:26:53,086] INFO  {IpSolverComp} starting...
+[17:26:53,087] INFO  {OMngrLauncher} waiting for nat
+[17:26:53,099] INFO  {NatSetup} received local interfaces:[NI:name:lo0 (lo0) addr:/127.0.0.1 up:true mtu:16384 netPrefixLength:8, NI:name:en0 (en0) addr:/192.168.1.79 up:true mtu:1500 netPrefixLength:24]
+[17:26:53,099] INFO  {NatSetup} multiple ips detected, proceeding with:/192.168.1.79
+[17:26:53,099] INFO  {NatSetup} starting with local interface:/192.168.1.79
+[17:26:53,106] INFO  {NatDetectionComp} 192.168.1.79:30000<1> initiating...
+[17:26:53,112] INFO  {NatSetup} binding on stun:192.168.1.79:43211<1>
+[17:26:53,362] INFO  {NatSetup} binding on stun:192.168.1.79:43210<1>
+[17:26:53,367] INFO  {UpnpComp} nat upnp initiating...
+[17:26:53,368] INFO  {NatDetectionComp} 192.168.1.79:30000<1> starting...
+[17:26:53,368] INFO  {UpnpComp} nat upnp starting...
+[17:26:53,496] INFO  {NettyNetwork@43211} Successfully bound to ip:port /192.168.1.79:43211
+[17:26:53,510] INFO  {NettyNetwork@43211} Successfully bound UDT to ip:port /192.168.1.79:59431 with config: {WRITE_SPIN_COUNT=16, MESSAGE_SIZE_ESTIMATOR=io.netty.channel.DefaultMessageSizeEstimator@507279d6, MAX_MESSAGES_PER_READ=16, CONNECT_TIMEOUT_MILLIS=30000, ALLOCATOR=PooledByteBufAllocator(directByDefault: true), AUTO_READ=true, io.netty.channel.udt.UdtChannelOption#PROTOCOL_SEND_BUFFER_SIZE=10485760, WRITE_BUFFER_LOW_WATER_MARK=32768, SO_REUSEADDR=true, io.netty.channel.udt.UdtChannelOption#PROTOCOL_RECEIVE_BUFFER_SIZE=10485760, SO_LINGER=0, WRITE_BUFFER_HIGH_WATER_MARK=65536, SO_SNDBUF=131072, io.netty.channel.udt.UdtChannelOption#SYSTEM_SEND_BUFFER_SIZE=1048576, io.netty.channel.udt.UdtChannelOption#SYSTEM_RECEIVE_BUFFER_SIZE=1048576, SO_BACKLOG=64, RCVBUF_ALLOCATOR=io.netty.channel.AdaptiveRecvByteBufAllocator@6bf6c81a, SO_RCVBUF=131072}
+[17:26:53,524] INFO  {NettyNetwork@43211} Successfully bound to ip:port /192.168.1.79:43211
+[17:26:54,824] INFO  {UpnpComp} nat upnp public ip detected:/83.249.200.69
+[17:26:54,825] INFO  {NatDetectionComp} 192.168.1.79:30000<1> upnp ready:Optional.of(/83.249.200.69)
+[17:26:55,380] INFO  {NatDetectionComp} 192.168.1.79:30000<1> nat detected:UB public ip:null
+[17:26:55,380] INFO  {NatSetup} nat detected:UPNP public ip:/83.249.200.69 private ip:/192.168.1.79
+[17:26:55,382] INFO  {Cybergarage} Register ports: 1
+[17:26:57,277] INFO  {UpnpComp} nat upnp mapped port:30000 protocol:UDP
+[17:26:57,278] INFO  {NatSetup} received map:{30000=[UDP, 30000]}
+[17:26:57,286] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:26:57,308] INFO  {NatSetup} binding on private:192.168.1.79
+[17:26:57,308] INFO  {NatSetup} binding on nat:83.249.200.69:30000<1>UPNP
+[17:26:57,310] INFO  {ChunkManagerComp} config - datagramUsableSize:1000 cleanupTimeout:10000
+[17:26:57,313] INFO  {ChunkManagerComp} 83.249.200.69:30000<1>UPNP initiating...
+[17:26:57,321] INFO  {HPServerComp} 83.249.200.69:30000<1> initiating...
+[17:26:57,327] INFO  {SHPClientComp} 83.249.200.69:30000<1> initiating...
+[17:26:57,328] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:26:57,335] WARN  {CroupierComp} <oid:0,nid:83.249.200.69:30000<1>> no partners - not shuffling
+[17:26:57,336] INFO  {OMngrLauncher} nat started with:83.249.200.69:30000<1>UPNP
+[17:26:57,336] WARN  {CroupierComp} <oid:0,nid:83.249.200.69:30000<1>> no partners - not shuffling
+[17:26:57,336] INFO  {ChunkManagerComp} 83.249.200.69:30000<1>UPNP starting...
+[17:26:57,336] INFO  {HPServerComp} 83.249.200.69:30000<1> starting...
+[17:26:57,336] INFO  {SHPClientComp} 83.249.200.69:30000<1> starting...
+[17:26:57,337] ERROR {CaracalClientConfig} configuration problem:No configuration setting found for key 'system.sanityCheckPeriod'
+[17:26:57,338] ERROR {Kompics} Handling an event caused a fault! Might be handled later...
+java.lang.RuntimeException: CCBootstrap configuration problem
+	at se.sics.ktoolbox.cc.common.config.CaracalClientConfig.<init>(CaracalClientConfig.java:54)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.connectCaracal(OMngrLauncher.java:209)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.connectNStartApp(OMngrLauncher.java:127)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.access$700(OMngrLauncher.java:79)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher$OMngrLauncherProxy.startApp(OMngrLauncher.java:138)
+	at se.sics.nat.NatSetup.phase3(NatSetup.java:281)
+	at se.sics.nat.NatSetup.access$1000(NatSetup.java:74)
+	at se.sics.nat.NatSetup$4.handle(NatSetup.java:221)
+	at se.sics.nat.NatSetup$4.handle(NatSetup.java:210)
+	at se.sics.kompics.JavaComponent.executeEvent(JavaComponent.java:365)
+	at se.sics.kompics.JavaComponent.execute(JavaComponent.java:309)
+	at se.sics.kompics.Scheduler.executeComponent(Scheduler.java:15)
+	at se.sics.kompics.scheduler.ThreadPoolScheduler.access$100(ThreadPoolScheduler.java:15)
+	at se.sics.kompics.scheduler.ThreadPoolScheduler$1.run(ThreadPoolScheduler.java:35)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: com.typesafe.config.ConfigException$Missing: No configuration setting found for key 'system.sanityCheckPeriod'
+	at com.typesafe.config.impl.SimpleConfig.findKey(SimpleConfig.java:124)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:145)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:151)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:159)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:164)
+	at com.typesafe.config.impl.SimpleConfig.getConfigNumber(SimpleConfig.java:179)
+	at com.typesafe.config.impl.SimpleConfig.getNumber(SimpleConfig.java:185)
+	at com.typesafe.config.impl.SimpleConfig.getLong(SimpleConfig.java:196)
+	at se.sics.ktoolbox.cc.common.config.CaracalClientConfig.<init>(CaracalClientConfig.java:44)
+	... 16 more
+[17:26:57,340] ERROR {Kompics} A fault was escalated to the root component: 
+KompicsFault(java.lang.RuntimeException: CCBootstrap configuration problem thrown in Component(7fea1a37-e71a-43e7-a059-79cb9b1e9797):se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher@787e2a60 while handling event se.sics.nat.stun.upnp.msg.MapPorts$Resp@35be892f) 
+
+
+[17:28:18,914] INFO  {OMngrLauncher} initiating...
+[17:28:18,918] INFO  {OMngrLauncher} starting
+[17:28:19,002] INFO  {IpSolverComp} initiating...
+[17:28:19,003] INFO  {IpSolverComp} starting...
+[17:28:19,003] INFO  {OMngrLauncher} waiting for nat
+[17:28:19,015] INFO  {NatSetup} received local interfaces:[NI:name:lo0 (lo0) addr:/127.0.0.1 up:true mtu:16384 netPrefixLength:8, NI:name:en0 (en0) addr:/192.168.1.79 up:true mtu:1500 netPrefixLength:24]
+[17:28:19,016] INFO  {NatSetup} multiple ips detected, proceeding with:/192.168.1.79
+[17:28:19,016] INFO  {NatSetup} starting with local interface:/192.168.1.79
+[17:28:19,022] INFO  {NatDetectionComp} 192.168.1.79:30000<1> initiating...
+[17:28:19,029] INFO  {NatSetup} binding on stun:192.168.1.79:43211<1>
+[17:28:19,229] INFO  {NatSetup} binding on stun:192.168.1.79:43210<1>
+[17:28:19,236] INFO  {UpnpComp} nat upnp initiating...
+[17:28:19,238] INFO  {NatDetectionComp} 192.168.1.79:30000<1> starting...
+[17:28:19,238] INFO  {UpnpComp} nat upnp starting...
+[17:28:19,360] INFO  {NettyNetwork@43211} Successfully bound to ip:port /192.168.1.79:43211
+[17:28:19,373] INFO  {NettyNetwork@43211} Successfully bound UDT to ip:port /192.168.1.79:55839 with config: {WRITE_BUFFER_HIGH_WATER_MARK=65536, io.netty.channel.udt.UdtChannelOption#PROTOCOL_RECEIVE_BUFFER_SIZE=10485760, SO_SNDBUF=131072, AUTO_READ=true, MESSAGE_SIZE_ESTIMATOR=io.netty.channel.DefaultMessageSizeEstimator@1249fcc6, MAX_MESSAGES_PER_READ=16, WRITE_SPIN_COUNT=16, RCVBUF_ALLOCATOR=io.netty.channel.AdaptiveRecvByteBufAllocator@11b7f237, io.netty.channel.udt.UdtChannelOption#PROTOCOL_SEND_BUFFER_SIZE=10485760, io.netty.channel.udt.UdtChannelOption#SYSTEM_SEND_BUFFER_SIZE=1048576, SO_RCVBUF=131072, CONNECT_TIMEOUT_MILLIS=30000, SO_BACKLOG=64, SO_LINGER=0, SO_REUSEADDR=true, WRITE_BUFFER_LOW_WATER_MARK=32768, ALLOCATOR=PooledByteBufAllocator(directByDefault: true), io.netty.channel.udt.UdtChannelOption#SYSTEM_RECEIVE_BUFFER_SIZE=1048576}
+[17:28:19,384] INFO  {NettyNetwork@43211} Successfully bound to ip:port /192.168.1.79:43211
+[17:28:20,627] INFO  {UpnpComp} nat upnp public ip detected:/83.249.200.69
+[17:28:20,628] INFO  {NatDetectionComp} 192.168.1.79:30000<1> upnp ready:Optional.of(/83.249.200.69)
+[17:28:21,253] INFO  {NatDetectionComp} 192.168.1.79:30000<1> nat detected:UB public ip:null
+[17:28:21,254] INFO  {NatSetup} nat detected:UPNP public ip:/83.249.200.69 private ip:/192.168.1.79
+[17:28:21,257] INFO  {Cybergarage} Register ports: 1
+[17:28:23,890] INFO  {UpnpComp} nat upnp mapped port:30000 protocol:UDP
+[17:28:23,891] INFO  {NatSetup} received map:{30000=[UDP, 30000]}
+[17:28:23,896] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:28:23,922] INFO  {NatSetup} binding on private:192.168.1.79
+[17:28:23,923] INFO  {NatSetup} binding on nat:83.249.200.69:30000<1>UPNP
+[17:28:23,926] INFO  {ChunkManagerComp} config - datagramUsableSize:1000 cleanupTimeout:10000
+[17:28:23,930] INFO  {ChunkManagerComp} 83.249.200.69:30000<1>UPNP initiating...
+[17:28:23,941] INFO  {HPServerComp} 83.249.200.69:30000<1> initiating...
+[17:28:23,949] INFO  {SHPClientComp} 83.249.200.69:30000<1> initiating...
+[17:28:23,950] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:28:23,959] WARN  {CroupierComp} <oid:0,nid:83.249.200.69:30000<1>> no partners - not shuffling
+[17:28:23,959] INFO  {ChunkManagerComp} 83.249.200.69:30000<1>UPNP starting...
+[17:28:23,960] WARN  {CroupierComp} <oid:0,nid:83.249.200.69:30000<1>> no partners - not shuffling
+[17:28:23,960] INFO  {OMngrLauncher} nat started with:83.249.200.69:30000<1>UPNP
+[17:28:23,960] INFO  {HPServerComp} 83.249.200.69:30000<1> starting...
+[17:28:23,960] INFO  {SHPClientComp} 83.249.200.69:30000<1> starting...
+[17:28:23,961] ERROR {CaracalClientConfig} configuration problem:No configuration setting found for key 'system.sanityCheckPeriod'
+[17:28:23,962] ERROR {Kompics} Handling an event caused a fault! Might be handled later...
+java.lang.RuntimeException: CCBootstrap configuration problem
+	at se.sics.ktoolbox.cc.common.config.CaracalClientConfig.<init>(CaracalClientConfig.java:54)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.connectCaracal(OMngrLauncher.java:209)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.connectNStartApp(OMngrLauncher.java:127)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.access$700(OMngrLauncher.java:79)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher$OMngrLauncherProxy.startApp(OMngrLauncher.java:138)
+	at se.sics.nat.NatSetup.phase3(NatSetup.java:281)
+	at se.sics.nat.NatSetup.access$1000(NatSetup.java:74)
+	at se.sics.nat.NatSetup$4.handle(NatSetup.java:221)
+	at se.sics.nat.NatSetup$4.handle(NatSetup.java:210)
+	at se.sics.kompics.JavaComponent.executeEvent(JavaComponent.java:365)
+	at se.sics.kompics.JavaComponent.execute(JavaComponent.java:309)
+	at se.sics.kompics.Scheduler.executeComponent(Scheduler.java:15)
+	at se.sics.kompics.scheduler.ThreadPoolScheduler.access$100(ThreadPoolScheduler.java:15)
+	at se.sics.kompics.scheduler.ThreadPoolScheduler$1.run(ThreadPoolScheduler.java:35)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: com.typesafe.config.ConfigException$Missing: No configuration setting found for key 'system.sanityCheckPeriod'
+	at com.typesafe.config.impl.SimpleConfig.findKey(SimpleConfig.java:124)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:145)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:151)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:159)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:164)
+	at com.typesafe.config.impl.SimpleConfig.getConfigNumber(SimpleConfig.java:179)
+	at com.typesafe.config.impl.SimpleConfig.getNumber(SimpleConfig.java:185)
+	at com.typesafe.config.impl.SimpleConfig.getLong(SimpleConfig.java:196)
+	at se.sics.ktoolbox.cc.common.config.CaracalClientConfig.<init>(CaracalClientConfig.java:44)
+	... 16 more
+[17:28:23,965] ERROR {Kompics} A fault was escalated to the root component: 
+KompicsFault(java.lang.RuntimeException: CCBootstrap configuration problem thrown in Component(6dc71afa-4e39-415d-b77b-337ad505aae0):se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher@2e7c83b while handling event se.sics.nat.stun.upnp.msg.MapPorts$Resp@22fd049) 
+
+
+[17:29:13,341] INFO  {OMngrLauncher} initiating...
+[17:29:13,349] INFO  {OMngrLauncher} starting
+[17:29:13,470] INFO  {IpSolverComp} initiating...
+[17:29:13,471] INFO  {IpSolverComp} starting...
+[17:29:13,472] INFO  {OMngrLauncher} waiting for nat
+[17:29:13,887] INFO  {NatSetup} received local interfaces:[NI:name:lo0 (lo0) addr:/127.0.0.1 up:true mtu:16384 netPrefixLength:8, NI:name:en0 (en0) addr:/192.168.1.79 up:true mtu:1500 netPrefixLength:24]
+[17:29:13,888] INFO  {NatSetup} multiple ips detected, proceeding with:/192.168.1.79
+[17:29:13,888] INFO  {NatSetup} starting with local interface:/192.168.1.79
+[17:29:13,899] INFO  {NatDetectionComp} 192.168.1.79:30000<1> initiating...
+[17:29:13,907] INFO  {NatSetup} binding on stun:192.168.1.79:43211<1>
+[17:29:14,178] INFO  {NatSetup} binding on stun:192.168.1.79:43210<1>
+[17:29:14,184] INFO  {UpnpComp} nat upnp initiating...
+[17:29:14,187] INFO  {NatDetectionComp} 192.168.1.79:30000<1> starting...
+[17:29:14,187] INFO  {UpnpComp} nat upnp starting...
+[17:29:14,296] INFO  {NettyNetwork@43211} Successfully bound to ip:port /192.168.1.79:43211
+[17:29:14,314] INFO  {NettyNetwork@43211} Successfully bound UDT to ip:port /192.168.1.79:64581 with config: {io.netty.channel.udt.UdtChannelOption#PROTOCOL_SEND_BUFFER_SIZE=10485760, SO_BACKLOG=64, ALLOCATOR=PooledByteBufAllocator(directByDefault: true), SO_LINGER=0, RCVBUF_ALLOCATOR=io.netty.channel.AdaptiveRecvByteBufAllocator@4b3c09f7, MAX_MESSAGES_PER_READ=16, SO_REUSEADDR=true, io.netty.channel.udt.UdtChannelOption#SYSTEM_RECEIVE_BUFFER_SIZE=1048576, io.netty.channel.udt.UdtChannelOption#SYSTEM_SEND_BUFFER_SIZE=1048576, WRITE_SPIN_COUNT=16, io.netty.channel.udt.UdtChannelOption#PROTOCOL_RECEIVE_BUFFER_SIZE=10485760, CONNECT_TIMEOUT_MILLIS=30000, MESSAGE_SIZE_ESTIMATOR=io.netty.channel.DefaultMessageSizeEstimator@1ac10a7d, AUTO_READ=true, SO_RCVBUF=131072, WRITE_BUFFER_HIGH_WATER_MARK=65536, WRITE_BUFFER_LOW_WATER_MARK=32768, SO_SNDBUF=131072}
+[17:29:14,327] INFO  {NettyNetwork@43211} Successfully bound to ip:port /192.168.1.79:43211
+[17:29:15,631] INFO  {UpnpComp} nat upnp public ip detected:/83.249.200.69
+[17:29:15,631] INFO  {NatDetectionComp} 192.168.1.79:30000<1> upnp ready:Optional.of(/83.249.200.69)
+[17:29:16,200] INFO  {NatDetectionComp} 192.168.1.79:30000<1> nat detected:UB public ip:null
+[17:29:16,200] INFO  {NatSetup} nat detected:UPNP public ip:/83.249.200.69 private ip:/192.168.1.79
+[17:29:16,202] INFO  {Cybergarage} Register ports: 1
+[17:29:18,574] INFO  {UpnpComp} nat upnp mapped port:30000 protocol:UDP
+[17:29:18,575] INFO  {NatSetup} received map:{30000=[UDP, 30000]}
+[17:29:18,582] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:29:18,607] INFO  {NatSetup} binding on private:192.168.1.79
+[17:29:18,607] INFO  {NatSetup} binding on nat:83.249.200.69:30000<1>UPNP
+[17:29:18,613] INFO  {ChunkManagerComp} config - datagramUsableSize:1000 cleanupTimeout:10000
+[17:29:18,617] INFO  {ChunkManagerComp} 83.249.200.69:30000<1>UPNP initiating...
+[17:29:18,626] INFO  {HPServerComp} 83.249.200.69:30000<1> initiating...
+[17:29:18,635] INFO  {SHPClientComp} 83.249.200.69:30000<1> initiating...
+[17:29:18,635] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:29:18,646] WARN  {CroupierComp} <oid:0,nid:83.249.200.69:30000<1>> no partners - not shuffling
+[17:29:18,646] INFO  {OMngrLauncher} nat started with:83.249.200.69:30000<1>UPNP
+[17:29:18,646] WARN  {CroupierComp} <oid:0,nid:83.249.200.69:30000<1>> no partners - not shuffling
+[17:29:18,646] INFO  {ChunkManagerComp} 83.249.200.69:30000<1>UPNP starting...
+[17:29:18,647] INFO  {HPServerComp} 83.249.200.69:30000<1> starting...
+[17:29:18,649] INFO  {SHPClientComp} 83.249.200.69:30000<1> starting...
+[17:29:18,652] ERROR {Kompics} Handling an event caused a fault! Might be handled later...
+java.lang.RuntimeException: Caracal Bootstrap configuration problem - missing config
+	at se.sics.p2ptoolbox.util.config.ConfigHelper.readCaracalBootstrap(ConfigHelper.java:43)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.connectCaracal(OMngrLauncher.java:210)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.connectNStartApp(OMngrLauncher.java:127)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.access$700(OMngrLauncher.java:79)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher$OMngrLauncherProxy.startApp(OMngrLauncher.java:138)
+	at se.sics.nat.NatSetup.phase3(NatSetup.java:281)
+	at se.sics.nat.NatSetup.access$1000(NatSetup.java:74)
+	at se.sics.nat.NatSetup$4.handle(NatSetup.java:221)
+	at se.sics.nat.NatSetup$4.handle(NatSetup.java:210)
+	at se.sics.kompics.JavaComponent.executeEvent(JavaComponent.java:365)
+	at se.sics.kompics.JavaComponent.execute(JavaComponent.java:309)
+	at se.sics.kompics.Scheduler.executeComponent(Scheduler.java:15)
+	at se.sics.kompics.scheduler.ThreadPoolScheduler.access$100(ThreadPoolScheduler.java:15)
+	at se.sics.kompics.scheduler.ThreadPoolScheduler$1.run(ThreadPoolScheduler.java:35)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: com.typesafe.config.ConfigException$Missing: No configuration setting found for key 'caracal'
+	at com.typesafe.config.impl.SimpleConfig.findKey(SimpleConfig.java:124)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:147)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:159)
+	at com.typesafe.config.impl.SimpleConfig.find(SimpleConfig.java:164)
+	at com.typesafe.config.impl.SimpleConfig.getString(SimpleConfig.java:206)
+	at se.sics.p2ptoolbox.util.config.ConfigHelper.readCaracalBootstrap(ConfigHelper.java:38)
+	... 16 more
+[17:29:18,656] ERROR {Kompics} A fault was escalated to the root component: 
+KompicsFault(java.lang.RuntimeException: Caracal Bootstrap configuration problem - missing config thrown in Component(5fd9aa2a-3a10-42f3-8d64-2e16d3516600):se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher@228374fb while handling event se.sics.nat.stun.upnp.msg.MapPorts$Resp@32574a90) 
+
+
+[17:30:23,589] INFO  {OMngrLauncher} initiating...
+[17:30:23,594] INFO  {OMngrLauncher} starting
+[17:30:23,688] INFO  {IpSolverComp} initiating...
+[17:30:23,690] INFO  {IpSolverComp} starting...
+[17:30:23,690] INFO  {OMngrLauncher} waiting for nat
+[17:30:23,710] INFO  {NatSetup} received local interfaces:[NI:name:lo0 (lo0) addr:/127.0.0.1 up:true mtu:16384 netPrefixLength:8, NI:name:en0 (en0) addr:/192.168.1.79 up:true mtu:1500 netPrefixLength:24]
+[17:30:23,710] INFO  {NatSetup} multiple ips detected, proceeding with:/192.168.1.79
+[17:30:23,710] INFO  {NatSetup} starting with local interface:/192.168.1.79
+[17:30:23,721] INFO  {NatDetectionComp} 192.168.1.79:30000<1> initiating...
+[17:30:23,730] INFO  {NatSetup} binding on stun:192.168.1.79:43211<1>
+[17:30:23,952] INFO  {NatSetup} binding on stun:192.168.1.79:43210<1>
+[17:30:23,956] INFO  {UpnpComp} nat upnp initiating...
+[17:30:23,958] INFO  {NatDetectionComp} 192.168.1.79:30000<1> starting...
+[17:30:23,958] INFO  {UpnpComp} nat upnp starting...
+[17:30:24,083] INFO  {NettyNetwork@43211} Successfully bound to ip:port /192.168.1.79:43211
+[17:30:24,099] INFO  {NettyNetwork@43211} Successfully bound UDT to ip:port /192.168.1.79:52037 with config: {RCVBUF_ALLOCATOR=io.netty.channel.AdaptiveRecvByteBufAllocator@5ba51232, SO_BACKLOG=64, SO_REUSEADDR=true, io.netty.channel.udt.UdtChannelOption#SYSTEM_SEND_BUFFER_SIZE=1048576, io.netty.channel.udt.UdtChannelOption#PROTOCOL_SEND_BUFFER_SIZE=10485760, AUTO_READ=true, SO_RCVBUF=131072, ALLOCATOR=PooledByteBufAllocator(directByDefault: true), MESSAGE_SIZE_ESTIMATOR=io.netty.channel.DefaultMessageSizeEstimator@22403d5a, SO_SNDBUF=131072, MAX_MESSAGES_PER_READ=16, io.netty.channel.udt.UdtChannelOption#SYSTEM_RECEIVE_BUFFER_SIZE=1048576, WRITE_SPIN_COUNT=16, WRITE_BUFFER_HIGH_WATER_MARK=65536, io.netty.channel.udt.UdtChannelOption#PROTOCOL_RECEIVE_BUFFER_SIZE=10485760, WRITE_BUFFER_LOW_WATER_MARK=32768, SO_LINGER=0, CONNECT_TIMEOUT_MILLIS=30000}
+[17:30:24,117] INFO  {NettyNetwork@43211} Successfully bound to ip:port /192.168.1.79:43211
+[17:30:25,439] INFO  {UpnpComp} nat upnp public ip detected:/83.249.200.69
+[17:30:25,440] INFO  {NatDetectionComp} 192.168.1.79:30000<1> upnp ready:Optional.of(/83.249.200.69)
+[17:30:25,979] INFO  {NatDetectionComp} 192.168.1.79:30000<1> nat detected:UB public ip:null
+[17:30:25,979] INFO  {NatSetup} nat detected:UPNP public ip:/83.249.200.69 private ip:/192.168.1.79
+[17:30:25,981] INFO  {Cybergarage} Register ports: 1
+[17:30:28,091] INFO  {UpnpComp} nat upnp mapped port:30000 protocol:UDP
+[17:30:28,092] INFO  {NatSetup} received map:{30000=[UDP, 30000]}
+[17:30:28,097] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:30:28,122] INFO  {NatSetup} binding on private:192.168.1.79
+[17:30:28,122] INFO  {NatSetup} binding on nat:83.249.200.69:30000<1>UPNP
+[17:30:28,126] INFO  {ChunkManagerComp} config - datagramUsableSize:1000 cleanupTimeout:10000
+[17:30:28,129] INFO  {ChunkManagerComp} 83.249.200.69:30000<1>UPNP initiating...
+[17:30:28,136] INFO  {HPServerComp} 83.249.200.69:30000<1> initiating...
+[17:30:28,149] INFO  {SHPClientComp} 83.249.200.69:30000<1> initiating...
+[17:30:28,151] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:30:28,164] WARN  {CroupierComp} <oid:0,nid:83.249.200.69:30000<1>> no partners - not shuffling
+[17:30:28,164] INFO  {ChunkManagerComp} 83.249.200.69:30000<1>UPNP starting...
+[17:30:28,165] WARN  {CroupierComp} <oid:0,nid:83.249.200.69:30000<1>> no partners - not shuffling
+[17:30:28,164] INFO  {OMngrLauncher} nat started with:83.249.200.69:30000<1>UPNP
+[17:30:28,166] INFO  {HPServerComp} 83.249.200.69:30000<1> starting...
+[17:30:28,166] INFO  {SHPClientComp} 83.249.200.69:30000<1> starting...
+[17:30:28,183] INFO  {CCBootstrapComp} 83.249.200.69:30000<1> initiating with bootstrap nodes:[]
+[17:30:28,184] INFO  {CCBootstrapComp} 83.249.200.69:30000<1> starting...
+[17:30:28,197] INFO  {CCHeartbeatComp} 83.249.200.69:30000<1> initiating...
+[17:30:28,197] INFO  {CCHeartbeatComp} 83.249.200.69:30000<1> waiting for ready
+[17:30:28,329] INFO  {CCBootstrapComp} 83.249.200.69:30000<1> connected to caracal
+[17:30:28,330] INFO  {OMngrLauncher} starting: caracal ready
+[17:30:28,330] INFO  {CCHeartbeatComp} 83.249.200.69:30000<1> received ready and schema prefix
+[17:30:28,331] INFO  {CCHeartbeatComp} 83.249.200.69:30000<1> starting...
+[17:30:28,331] INFO  {CCBootstrapComp} 83.249.200.69:30000<1> caracal nodes:[193.10.64.86:45678/, 193.10.64.109:45678/]
+[17:30:28,331] INFO  {OMngrLauncher} starting: heartbeat ready
+[17:30:28,339] INFO  {OverlayMngrComp} 83.249.200.69:30000<1> initiating...
+[17:30:28,340] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:30:28,342] ERROR {Kompics} Handling an event caused a fault! Might be handled later...
+java.lang.RuntimeException: Cannot create component se.sics.ktoolbox.overlaymngr.OverlayMngrComp
+	at se.sics.kompics.JavaComponent.doCreate(JavaComponent.java:223)
+	at se.sics.kompics.ComponentDefinition.create(ComponentDefinition.java:182)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.connectOverlayMngr(OMngrLauncher.java:249)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher.access$2100(OMngrLauncher.java:79)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher$4.handle(OMngrLauncher.java:243)
+	at se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher$4.handle(OMngrLauncher.java:239)
+	at se.sics.kompics.JavaComponent.executeEvent(JavaComponent.java:365)
+	at se.sics.kompics.JavaComponent.execute(JavaComponent.java:309)
+	at se.sics.kompics.Scheduler.executeComponent(Scheduler.java:15)
+	at se.sics.kompics.scheduler.ThreadPoolScheduler.access$100(ThreadPoolScheduler.java:15)
+	at se.sics.kompics.scheduler.ThreadPoolScheduler$1.run(ThreadPoolScheduler.java:35)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:408)
+	at se.sics.kompics.JavaComponent.createInstance(JavaComponent.java:236)
+	at se.sics.kompics.JavaComponent.doCreate(JavaComponent.java:203)
+	... 13 more
+Caused by: java.lang.RuntimeException: se.sics.p2ptoolbox.croupier.CroupierComp@398eddcf has no negative se.sics.p2ptoolbox.croupier.CroupierPort
+	at se.sics.kompics.JavaComponent.getNegative(JavaComponent.java:96)
+	at se.sics.ktoolbox.overlaymngr.OverlayMngrComp.connectGlobalCroupier(OverlayMngrComp.java:160)
+	at se.sics.ktoolbox.overlaymngr.OverlayMngrComp.<init>(OverlayMngrComp.java:103)
+	... 19 more
+[17:30:28,344] ERROR {Kompics} A fault was escalated to the root component: 
+KompicsFault(java.lang.RuntimeException: Cannot create component se.sics.ktoolbox.overlaymngr.OverlayMngrComp thrown in Component(54689220-2b80-4ffd-85ad-5ff71ba7c320):se.sics.ktoolbox.examples.overlaymngr.OMngrLauncher@1c202f56 while handling event se.sics.ktoolbox.cc.common.op.CCSimpleReady@5b78a1ff) 
+
+
+[17:31:25,699] INFO  {OMngrLauncher} initiating...
+[17:31:25,703] INFO  {OMngrLauncher} starting
+[17:31:25,779] INFO  {IpSolverComp} initiating...
+[17:31:25,779] INFO  {IpSolverComp} starting...
+[17:31:25,780] INFO  {OMngrLauncher} waiting for nat
+[17:31:26,199] INFO  {NatSetup} received local interfaces:[NI:name:lo0 (lo0) addr:/127.0.0.1 up:true mtu:16384 netPrefixLength:8, NI:name:en0 (en0) addr:/192.168.1.79 up:true mtu:1500 netPrefixLength:24]
+[17:31:26,199] INFO  {NatSetup} multiple ips detected, proceeding with:/192.168.1.79
+[17:31:26,199] INFO  {NatSetup} starting with local interface:/192.168.1.79
+[17:31:26,205] INFO  {NatDetectionComp} 192.168.1.79:30000<1> initiating...
+[17:31:26,211] INFO  {NatSetup} binding on stun:192.168.1.79:43211<1>
+[17:31:26,390] INFO  {NatSetup} binding on stun:192.168.1.79:43210<1>
+[17:31:26,396] INFO  {UpnpComp} nat upnp initiating...
+[17:31:26,398] INFO  {NatDetectionComp} 192.168.1.79:30000<1> starting...
+[17:31:26,399] INFO  {UpnpComp} nat upnp starting...
+[17:31:26,498] INFO  {NettyNetwork@43211} Successfully bound to ip:port /192.168.1.79:43211
+[17:31:26,510] INFO  {NettyNetwork@43211} Successfully bound UDT to ip:port /192.168.1.79:65449 with config: {io.netty.channel.udt.UdtChannelOption#PROTOCOL_RECEIVE_BUFFER_SIZE=10485760, ALLOCATOR=PooledByteBufAllocator(directByDefault: true), MESSAGE_SIZE_ESTIMATOR=io.netty.channel.DefaultMessageSizeEstimator@56ebca5b, MAX_MESSAGES_PER_READ=16, io.netty.channel.udt.UdtChannelOption#SYSTEM_RECEIVE_BUFFER_SIZE=1048576, WRITE_SPIN_COUNT=16, RCVBUF_ALLOCATOR=io.netty.channel.AdaptiveRecvByteBufAllocator@3ae4b80c, SO_RCVBUF=131072, SO_SNDBUF=131072, CONNECT_TIMEOUT_MILLIS=30000, SO_BACKLOG=64, WRITE_BUFFER_LOW_WATER_MARK=32768, SO_LINGER=0, WRITE_BUFFER_HIGH_WATER_MARK=65536, AUTO_READ=true, io.netty.channel.udt.UdtChannelOption#PROTOCOL_SEND_BUFFER_SIZE=10485760, io.netty.channel.udt.UdtChannelOption#SYSTEM_SEND_BUFFER_SIZE=1048576, SO_REUSEADDR=true}
+[17:31:26,521] INFO  {NettyNetwork@43211} Successfully bound to ip:port /192.168.1.79:43211
+[17:31:27,835] INFO  {UpnpComp} nat upnp public ip detected:/83.249.200.69
+[17:31:27,836] INFO  {NatDetectionComp} 192.168.1.79:30000<1> upnp ready:Optional.of(/83.249.200.69)
+[17:31:28,413] INFO  {NatDetectionComp} 192.168.1.79:30000<1> nat detected:UB public ip:null
+[17:31:28,413] INFO  {NatSetup} nat detected:UPNP public ip:/83.249.200.69 private ip:/192.168.1.79
+[17:31:28,415] INFO  {Cybergarage} Register ports: 1
+[17:31:30,983] INFO  {UpnpComp} nat upnp mapped port:30000 protocol:UDP
+[17:31:30,985] INFO  {NatSetup} received map:{30000=[UDP, 30000]}
+[17:31:30,991] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:31:31,017] INFO  {NatSetup} binding on private:192.168.1.79
+[17:31:31,018] INFO  {NatSetup} binding on nat:83.249.200.69:30000<1>UPNP
+[17:31:31,021] INFO  {ChunkManagerComp} config - datagramUsableSize:1000 cleanupTimeout:10000
+[17:31:31,024] INFO  {ChunkManagerComp} 83.249.200.69:30000<1>UPNP initiating...
+[17:31:31,037] INFO  {HPServerComp} 83.249.200.69:30000<1> initiating...
+[17:31:31,043] INFO  {SHPClientComp} 83.249.200.69:30000<1> initiating...
+[17:31:31,043] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0
+[17:31:31,053] WARN  {CroupierComp} <oid:0,nid:83.249.200.69:30000<1>> no partners - not shuffling
+[17:31:31,054] INFO  {OMngrLauncher} nat started with:83.249.200.69:30000<1>UPNP
+[17:31:31,054] WARN  {CroupierComp} <oid:0,nid:83.249.200.69:30000<1>> no partners - not shuffling
+[17:31:31,053] INFO  {ChunkManagerComp} 83.249.200.69:30000<1>UPNP starting...
+[17:31:31,054] INFO  {HPServerComp} 83.249.200.69:30000<1> starting...
+[17:31:31,054] INFO  {SHPClientComp} 83.249.200.69:30000<1> starting...
+[17:31:31,063] INFO  {CCBootstrapComp} 83.249.200.69:30000<1> initiating with bootstrap nodes:[]
+[17:31:31,066] INFO  {CCBootstrapComp} 83.249.200.69:30000<1> starting...
+[17:31:31,076] INFO  {CCHeartbeatComp} 83.249.200.69:30000<1> initiating...
+[17:31:31,076] INFO  {CCHeartbeatComp} 83.249.200.69:30000<1> waiting for ready
+[17:31:31,179] INFO  {CCBootstrapComp} 83.249.200.69:30000<1> connected to caracal
+[17:31:31,180] INFO  {OMngrLauncher} starting: caracal ready
+[17:31:31,180] INFO  {CCHeartbeatComp} 83.249.200.69:30000<1> received ready and schema prefix
+[17:31:31,181] INFO  {CCBootstrapComp} 83.249.200.69:30000<1> caracal nodes:[193.10.64.200:45678/, 193.10.64.85:45678/]
+[17:31:31,181] INFO  {CCHeartbeatComp} 83.249.200.69:30000<1> starting...
+[17:31:31,184] INFO  {OMngrLauncher} starting: heartbeat ready
+[17:31:31,195] INFO  {OverlayMngrComp} 83.249.200.69:30000<1> initiating...
+[17:31:31,197] INFO  {CroupierConfig} policy:RANDOM view size:10 shuffle size:5 period:2000 timeout:1000 softMaxTemperature:500.0

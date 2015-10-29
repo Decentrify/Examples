@@ -1,2 +1,9 @@
 /nat/stunServer/target/
 /nat/node/target/
+/overlay-mngr/target/
+/nat/core/target/
+/nat/node/core/target/
+/nat/simulation/target/
+/nat/node-core/target/
+/nat/stun-server/target/
+/channel/target/

@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>Examples</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>Examples</artifactId>
+        <groupId>se.sics.ktoolbox.examples</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
     <groupId>se.sics.ktoolbox.examples</groupId>
+    <artifactId>nat</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-  </parent>
-  <groupId>se.sics.ktoolbox.examples</groupId>
-  <artifactId>nat</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>Example NAT</name>
+    <packaging>pom</packaging>
+    <name>Example Complete</name>
+    <modules>
+        <module>node-core</module>
+        <module>simulation</module>
+        <!--<module>stun-server</module>-->
+    </modules>
+    
+    <properties>
+        <kompics.version>${original.kompics.version}</kompics.version>
+        <simulator.version>${original.simulator.version}</simulator.version>
+        <util.version>${original.util.version}</util.version>
+        <networkmngr.version>${original.networkmngr.version}</networkmngr.version>
+        <croupier.version>${original.croupier.version}</croupier.version>
+        <overlaymngr.version>${original.overlaymngr.version}</overlaymngr.version>
+    </properties>
 </project>

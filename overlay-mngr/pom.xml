@@ -16,6 +16,12 @@
     <properties>
         <omngr.version>${original.omngr.version}</omngr.version>
         <nat.version>${original.nat.version}</nat.version>
+        <caracalclient.version>${original.caracalclient.version}</caracalclient.version>
+        
+        <util.version>${original.util.version}</util.version>
+        <croupier.version>${original.croupier.version}</croupier.version>
+        <gradient.version>${original.gradient.version}</gradient.version>
+        <chunkmngr.version>${original.chunkmngr.version}</chunkmngr.version>
     </properties>
     
     <dependencies>
@@ -27,6 +33,42 @@
         <dependency>
             <groupId>se.sics.nat</groupId>
             <artifactId>helper</artifactId>
+            <version>${nat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.sics.ktoolbox.cc.bootstrap</groupId>
+            <artifactId>core</artifactId>
+            <version>${caracalclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.sics.ktoolbox.cc.heartbeat</groupId>
+            <artifactId>core</artifactId>
+            <version>${caracalclient.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>se.sics.ktoolbox.util</groupId>
+            <artifactId>util-serializer</artifactId>
+            <version>${util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.sics.ktoolbox.croupier</groupId>
+            <artifactId>croupier-network</artifactId>
+            <version>${croupier.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.sics.ktoolbox.gradient</groupId>
+            <artifactId>gradient-network</artifactId>
+            <version>${gradient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.sics.ktoolbox.cm</groupId>
+            <artifactId>cm-network</artifactId>
+            <version>${chunkmngr.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.sics.nat</groupId>
+            <artifactId>network</artifactId>
             <version>${nat.version}</version>
         </dependency>
     </dependencies>
