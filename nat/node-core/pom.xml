@@ -22,6 +22,11 @@
             <artifactId>core</artifactId>
             <version>${overlaymngr.version}</version>
         </dependency>
+        <dependency>
+            <groupId>se.sics.nat</groupId>
+            <artifactId>core</artifactId>
+            <version>${nat.version}</version>
+        </dependency>
         <!-- serializers -->
         <dependency>
             <groupId>se.sics.ktoolbox.util</groupId>

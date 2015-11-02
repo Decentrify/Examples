@@ -28,7 +28,6 @@ import se.sics.p2ptoolbox.util.config.options.OpenAddressOption;
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class NodeKConfig implements KConfigLevel {
-    public static final Basic<Integer> port = new Basic("node.port", Integer.class, new NodeKConfig());
     public static final OpenAddressOption ping = new OpenAddressOption("ping", new NodeKConfig());
     
      @Override

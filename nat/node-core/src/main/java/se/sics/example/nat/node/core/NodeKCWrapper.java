@@ -33,11 +33,9 @@ public class NodeKCWrapper {
     
     public final KConfigCore configCore;
     public final SystemKCWrapper system;
-    public final int port;
     
     public NodeKCWrapper(KConfigCore configCore) {
         this.configCore = configCore;
         this.system = new SystemKCWrapper(configCore);
-        this.port = KConfigHelper.read(configCore, NodeKConfig.port);
     }
 }
