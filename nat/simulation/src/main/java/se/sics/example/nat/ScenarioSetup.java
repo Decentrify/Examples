@@ -36,7 +36,7 @@ public class ScenarioSetup {
     public static final long baseSeed = 1234;
     public static final Pair<Integer, Integer> stunServerPorts = Pair.with(31000, 31001);
     public static final Pair<Integer, Integer> stunClientPorts = Pair.with(32000, 32001); 
-    public static final int appPort = 30000;
+    public static final int nodePort = 30000;
     public static final NatedTrait[] nats = new NatedTrait[2];
     public static final DecoratedAddress globalCroupierBoot;
 
@@ -56,7 +56,7 @@ public class ScenarioSetup {
         nats[0] = NatedTrait.open();
         nats[1] = NatedTrait.nated(Nat.MappingPolicy.ENDPOINT_INDEPENDENT, Nat.AllocationPolicy.PORT_PRESERVATION, 0,
                 Nat.FilteringPolicy.ENDPOINT_INDEPENDENT, 10000, new ArrayList<DecoratedAddress>());
-        globalCroupierBoot = DecoratedAddress.open(getLocalIp(0, ScenarioNat.OP), appPort, 0);
+        globalCroupierBoot = DecoratedAddress.open(getLocalIp(0, ScenarioNat.OP), nodePort, 0);
     }
 
 //    public static NatEmulatorInit getNatEmulator(int natId, ScenarioNat natType) {
@@ -77,7 +77,7 @@ public class ScenarioSetup {
         long nodeSeed = baseSeed + nodeId;
         
         InetAddress nodeIp = getLocalIp(nodeId, natType);
-        return new SystemConfigBuilder(nodeSeed, nodeIp, appPort, nodeId, ConfigFactory.load());
+        return new SystemConfigBuilder(nodeSeed, nodeIp, nodePort, nodeId, ConfigFactory.load());
     }
     
     public static InetAddress getLocalIp(int nodeId, ScenarioNat natType) {

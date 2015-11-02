@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import se.sics.example.nat.node.NatEmulatorHostComp;
+import se.sics.example.nat.node.SimHostComp;
+import se.sics.example.nat.node.SimHostComp.SimHostInit;
 import se.sics.example.nat.node.core.NodeHostComp;
 import se.sics.example.nat.node.core.NodeHostComp.NodeHostInit;
 import se.sics.example.nat.node.core.NodeKConfig;
@@ -77,7 +79,7 @@ public class ScenarioGen {
             = new Operation1<StartNodeCmd, Integer>() {
                 @Override
                 public StartNodeCmd generate(final Integer nodeId) {
-                    return new StartNodeCmd<StunServerHostComp, DecoratedAddress>() {
+                    return new StartNodeCmd<SimHostComp, DecoratedAddress>() {
                         private DecoratedAddress selfAdr;
 
                        {
@@ -87,7 +89,7 @@ public class ScenarioGen {
                                 int openType = 0;
                                 ScenarioSetup.ScenarioNat scenarioNatType = ScenarioSetup.ScenarioNat.values()[openType];
                                 InetAddress self = ScenarioSetup.getLocalIp(nodeId, scenarioNatType);
-                                selfAdr = DecoratedAddress.open(self, ScenarioSetup.appPort, nodeId);
+                                selfAdr = DecoratedAddress.open(self, ScenarioSetup.nodePort, nodeId);
                             }
                         }
 
@@ -102,12 +104,12 @@ public class ScenarioGen {
                         }
 
                         @Override
-                        public Class<StunServerHostComp> getNodeComponentDefinition() {
-                            return StunServerHostComp.class;
+                        public Class<SimHostComp> getNodeComponentDefinition() {
+                            return SimHostComp.class;
                         }
 
                         @Override
-                        public Init<StunServerHostComp> getNodeComponentInit(DecoratedAddress aggregatorServer, Set<DecoratedAddress> bootstrapNodes) {
+                        public Init<SimHostComp> getNodeComponentInit(DecoratedAddress aggregatorServer, Set<DecoratedAddress> bootstrapNodes) {
                             List<DecoratedAddress> boot = new ArrayList<>();
                             if (nodeId != 0) {
                                 boot.add(ScenarioSetup.globalCroupierBoot);
@@ -119,12 +121,13 @@ public class ScenarioGen {
                             configCore.writeValue(NetworkMngrKConfig.prefferedInterface, selfAdr.getIp().getHostAddress());
                             configCore.writeValue(StunServerKConfig.stunServerPort1, ScenarioSetup.stunServerPorts.getValue0());
                             configCore.writeValue(StunServerKConfig.stunServerPort2, ScenarioSetup.stunServerPorts.getValue1());
+                            configCore.writeValue(StunServerKConfig.nodePort, ScenarioSetup.nodePort);
                             configCore.writeValue(OverlayMngrConfig.bootstrap, boot);
 
                             SystemHookSetup systemHooks = new SystemHookSetup();
                             systemHooks.register(NetworkMngrHooks.RequiredHooks.IP_SOLVER.hookName, IpSolverHookFactory.getIpSolverEmulator());
                             systemHooks.register(NetworkMngrHooks.RequiredHooks.PORT_BINDING.hookName, PortBindingHookFactory.getPortBinderEmulator());
-                            return new StunServerHostInit(configCore, systemHooks);
+                            return new SimHostInit(configCore, systemHooks, StunServerHostComp.class, new StunServerHostInit(configCore, systemHooks));
                         }
 
                         @Override
@@ -152,7 +155,7 @@ public class ScenarioGen {
                             } else {
                                 ScenarioSetup.ScenarioNat scenarioNatType = ScenarioSetup.ScenarioNat.values()[natType];
                                 InetAddress self = ScenarioSetup.getLocalIp(nodeId, scenarioNatType);
-                                selfAdr = DecoratedAddress.open(self, ScenarioSetup.appPort, nodeId);
+                                selfAdr = DecoratedAddress.open(self, ScenarioSetup.nodePort, nodeId);
                             }
                         }
 
@@ -180,7 +183,7 @@ public class ScenarioGen {
                             configCore.writeValue(SystemKConfig.id, nodeId);
                             configCore.writeValue(SystemKConfig.seed, ScenarioSetup.baseSeed + nodeId);
                             configCore.writeValue(NetworkMngrKConfig.prefferedInterface, selfAdr.getIp().getHostAddress());
-                            configCore.writeValue(NodeKConfig.port, ScenarioSetup.appPort);
+                            configCore.writeValue(NodeKConfig.port, ScenarioSetup.nodePort);
                             configCore.writeValue(OverlayMngrConfig.bootstrap, boot);
 
                             SystemHookSetup systemHooks = new SystemHookSetup();
