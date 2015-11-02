@@ -17,8 +17,10 @@ Any value defined here will override the pom.xml file value but is only applicab
     </properties>
     <config-data xmlns="http://www.netbeans.org/ns/maven-config-data/1">
         <configurations>
-            <configuration id="runSS1" profiles=""/>
-            <configuration id="runSS2" profiles=""/>
+            <configuration id="stun1" profiles=""/>
+            <configuration id="stun2" profiles=""/>
+            <configuration id="stun3" profiles=""/>
+            <configuration id="stun4" profiles=""/>
         </configurations>
     </config-data>
 </project-shared-configuration>

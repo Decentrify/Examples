@@ -18,16 +18,8 @@
  */
 package se.sics.example.nat.node.util;
 
-import se.sics.p2ptoolbox.croupier.util.CroupierView;
-
 /**
- *
  * @author Alex Ormenisan <aaor@kth.se>
  */
-public class NodeView implements CroupierView {
-
-    @Override
-    public boolean isObserver() {
-        return false;
-    }
+public class NodeView {
 }

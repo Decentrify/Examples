@@ -7,3 +7,10 @@
 /nat/node-core/target/
 /nat/stun-server/target/
 /channel/target/
+
+/nat/stun-server/*.log*
+/nat/node-core/*.log*
+/nat/simulation/*.log*
+
+/nat/node-core/lib
+/nat/stun-server/lib

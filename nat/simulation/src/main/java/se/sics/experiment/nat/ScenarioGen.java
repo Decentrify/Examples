@@ -21,20 +21,19 @@ package se.sics.experiment.nat;
 import com.google.common.collect.ImmutableMap;
 import com.typesafe.config.ConfigFactory;
 import java.net.InetAddress;
-import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import org.javatuples.Pair;
 import se.sics.example.nat.node.NatEmulatorHostComp;
 import se.sics.example.nat.node.core.NodeHostComp;
 import se.sics.example.nat.node.core.NodeHostComp.NodeHostInit;
 import se.sics.example.nat.node.core.NodeKConfig;
 import se.sics.kompics.Init;
 import se.sics.ktoolbox.ipsolver.hooks.IpSolverHookFactory;
-import se.sics.ktoolbox.ipsolver.msg.GetIp;
 import se.sics.ktoolbox.networkmngr.NetworkMngrHooks;
 import se.sics.ktoolbox.networkmngr.NetworkMngrKConfig;
 import se.sics.ktoolbox.networkmngr.hooks.PortBindingHookFactory;
+import se.sics.ktoolbox.overlaymngr.OverlayMngrConfig;
 import se.sics.p2ptoolbox.simulator.cmd.impl.SetupCmd;
 import se.sics.p2ptoolbox.simulator.cmd.impl.StartNodeCmd;
 import se.sics.p2ptoolbox.simulator.dsl.SimulationScenario;
@@ -45,7 +44,6 @@ import se.sics.p2ptoolbox.simulator.dsl.distribution.ConstantDistribution;
 import se.sics.p2ptoolbox.simulator.dsl.distribution.extra.BasicIntSequentialDistribution;
 import se.sics.p2ptoolbox.util.config.KConfigCore;
 import se.sics.p2ptoolbox.util.config.impl.SystemKConfig;
-import se.sics.p2ptoolbox.util.helper.SystemConfigBuilder;
 import se.sics.p2ptoolbox.util.nat.NatedTrait;
 import se.sics.p2ptoolbox.util.network.impl.DecoratedAddress;
 import se.sics.p2ptoolbox.util.proxy.SystemHookSetup;
@@ -101,20 +99,24 @@ public class ScenarioGen {
                         @Override
                         public Init getNodeComponentInit(DecoratedAddress aggregator, Set<DecoratedAddress> bootstrap) {
                             ScenarioSetup.ScenarioNat scenarioNatType = ScenarioSetup.ScenarioNat.values()[natType];
-                            InetAddress self = ScenarioSetup.getLocalIp(nodeId, scenarioNatType);
-                            InetAddress ping = ScenarioSetup.getLocalIp(nodeId, scenarioNatType);
-//                            NatEmulatorInit natEInit = ScenarioSetup.getNatEmulator(nodeId, scenarioNatType);
+//                          NatEmulatorInit natEInit = ScenarioSetup.getNatEmulator(nodeId, scenarioNatType);
 
-                            //TODO Alex fix later 
+                            InetAddress self = ScenarioSetup.getLocalIp(nodeId, scenarioNatType);
                             selfAdr = DecoratedAddress.open(self, ScenarioSetup.appPort, nodeId);
-                            DecoratedAddress pingAdr = DecoratedAddress.open(self, ScenarioSetup.appPort, nodeId);
+
+                            List<DecoratedAddress> boot = new ArrayList<>();
+                            if (nodeId != 0) {
+                                InetAddress globalBoot = ScenarioSetup.getLocalIp(0, ScenarioSetup.ScenarioNat.values()[0]);
+                                DecoratedAddress globalBootAdr = DecoratedAddress.open(globalBoot, ScenarioSetup.appPort, 0);
+                                boot.add(globalBootAdr);
+                            }
 
                             KConfigCore configCore = new KConfigCore(ConfigFactory.load());
                             configCore.writeValue(SystemKConfig.id, nodeId);
                             configCore.writeValue(SystemKConfig.seed, ScenarioSetup.baseSeed + nodeId);
                             configCore.writeValue(NetworkMngrKConfig.prefferedInterface, self.getHostAddress());
                             configCore.writeValue(NodeKConfig.port, ScenarioSetup.appPort);
-                            configCore.writeValue(NodeKConfig.ping, pingAdr);
+                            configCore.writeValue(OverlayMngrConfig.bootstrap, boot);
 
                             SystemHookSetup systemHooks = new SystemHookSetup();
                             systemHooks.register(NetworkMngrHooks.RequiredHooks.IP_SOLVER.hookName, IpSolverHookFactory.getIpSolverEmulator());
@@ -149,7 +151,7 @@ public class ScenarioGen {
                 StochasticProcess natedNodes = new StochasticProcess() {
                     {
                         eventInterArrivalTime(constant(1000));
-                        raise(3, startNode, new BasicIntSequentialDistribution(4),
+                        raise(3, startNode, new BasicIntSequentialDistribution(0),
                                 new ConstantDistribution<>(Integer.class, 0));
                     }
                 };

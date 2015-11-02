@@ -14,7 +14,7 @@
     <modules>
         <module>node-core</module>
         <module>simulation</module>
-        <!--<module>stun-server</module>-->
+        <module>stun-server</module>
     </modules>
     
     <properties>
@@ -24,5 +24,6 @@
         <networkmngr.version>${original.networkmngr.version}</networkmngr.version>
         <croupier.version>${original.croupier.version}</croupier.version>
         <overlaymngr.version>${original.overlaymngr.version}</overlaymngr.version>
+        <nat.version>${original.nat.version}</nat.version>
     </properties>
 </project>

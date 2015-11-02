@@ -106,7 +106,7 @@ public class NodeComp extends ComponentDefinition {
             LOG.info("{}starting", logPrefix);
             scheduleStatusCheck();
             checkStart();
-            trigger(new CroupierUpdate(new NodeView()), croupierViewUpdate);
+            trigger(CroupierUpdate.update(new NodeView()), croupierViewUpdate);
         }
     };
 

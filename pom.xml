@@ -27,7 +27,6 @@
         <original.natecho.version>0.0.2-SNAPSHOT</original.natecho.version>
         <original.overlaymngr.version>0.0.1-SNAPSHOT</original.overlaymngr.version>
         <original.networkmngr.version>0.0.1-SNAPSHOT</original.networkmngr.version>
-        
         <original.nat.version>0.0.2-SNAPSHOT</original.nat.version>
 
         <junit.version>4.11</junit.version>

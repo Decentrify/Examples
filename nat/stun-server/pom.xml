@@ -14,10 +14,43 @@
   
     <dependencies>
         <dependency>
+            <groupId>se.sics.ktoolbox.networkmngr</groupId>
+            <artifactId>core</artifactId>
+            <version>${networkmngr.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.sics.ktoolbox.overlaymngr</groupId>
+            <artifactId>core</artifactId>
+            <version>${overlaymngr.version}</version>
+        </dependency>
+        <dependency>
             <groupId>se.sics.nat.stun.server</groupId>
             <artifactId>core</artifactId>
             <version>${nat.version}</version>
         </dependency>
+        
+        <!-- serializers -->
+        <dependency>
+            <groupId>se.sics.ktoolbox.util</groupId>
+            <artifactId>util-serializer</artifactId>
+            <version>${util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.sics.ktoolbox.croupier</groupId>
+            <artifactId>croupier-network</artifactId>
+            <version>${croupier.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.sics.ktoolbox.overlaymngr</groupId>
+            <artifactId>network</artifactId>
+            <version>${overlaymngr.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>se.sics.nat.stun</groupId>
+            <artifactId>network</artifactId>
+            <version>${nat.version}</version>
+        </dependency>
+        <!-- ************ -->
     </dependencies>
     
     <build>
