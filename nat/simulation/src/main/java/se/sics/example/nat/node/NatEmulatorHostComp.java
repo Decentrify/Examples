@@ -53,7 +53,7 @@ public class NatEmulatorHostComp extends ComponentDefinition {
     public NatEmulatorHostComp(NatEmulatorHostInit init) {
         config = init.config;
         systemHooks = init.systemHooks;
-        logPrefix = "<" + config.id + "> ";
+        logPrefix = "<nid:" + config.id + "> ";
         LOG.info("{}initiating", logPrefix);
         subscribe(handleStart, control);
 

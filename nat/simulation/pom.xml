@@ -30,5 +30,10 @@
             <artifactId>core</artifactId>
             <version>${nat.version}</version>
         </dependency>
+        <dependency>
+            <groupId>se.sics.nat.stun.client</groupId>
+            <artifactId>core</artifactId>
+            <version>${nat.version}</version>
+        </dependency>
     </dependencies>
 </project>

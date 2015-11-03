@@ -71,7 +71,7 @@ public class NodeHostComp extends ComponentDefinition {
     public NodeHostComp(NodeHostInit init) {
         this.config = init.config;
         this.systemHooks = init.systemHooks;
-        this.logPrefix = "<" + config.system.id + "> ";
+        this.logPrefix = "<nid:" + config.system.id + "> ";
         LOG.info("{}initializing with seed:{}", logPrefix, config.system.seed);
 
         subscribe(handleStart, control);
@@ -106,7 +106,10 @@ public class NodeHostComp extends ComponentDefinition {
             LOG.info("{}network manager ready on local interface:{}", logPrefix, networkConfig.localIp);
 
             DecoratedAddress self = DecoratedAddress.open(networkConfig.localIp, config.system.port, config.system.id);
-            trigger(new Bind.Request(UUID.randomUUID(), self, true), networkMngr.getPositive(NetworkMngrPort.class));
+            Bind.Request req = new Bind.Request(UUID.randomUUID(), self, true); 
+            LOG.trace("{}bound response:{} adr:{}", new Object[]{logPrefix, req.id, 
+                req.self.getBase()});
+            trigger(req, networkMngr.getPositive(NetworkMngrPort.class));
         }
     };
 
@@ -114,7 +117,8 @@ public class NodeHostComp extends ComponentDefinition {
         @Override
         public void handle(Bind.Response resp) {
             self = DecoratedAddress.open(networkConfig.localIp, resp.boundPort, config.system.id);
-            logPrefix = "<" + self.getBase().toString() + "> ";
+            LOG.trace("{}bound response:{} adr:{} port:{}", new Object[]{logPrefix, resp.req.id, 
+                resp.req.self.getBase(), resp.boundPort});
             LOG.info("{}bound port:{}", logPrefix, resp.boundPort);
             connectOverlayMngr(false);
             connectNatDetection(false);

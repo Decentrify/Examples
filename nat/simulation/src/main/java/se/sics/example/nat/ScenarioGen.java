@@ -36,9 +36,12 @@ import se.sics.ktoolbox.networkmngr.NetworkMngrHooks;
 import se.sics.ktoolbox.networkmngr.NetworkMngrKConfig;
 import se.sics.ktoolbox.networkmngr.hooks.PortBindingHookFactory;
 import se.sics.ktoolbox.overlaymngr.OverlayMngrConfig;
+import se.sics.nat.NatDetectionHooks;
+import se.sics.nat.stun.client.StunClientKConfig;
 import se.sics.nat.stun.server.StunServerHostComp;
 import se.sics.nat.stun.server.StunServerHostComp.StunServerHostInit;
 import se.sics.nat.stun.server.StunServerKConfig;
+import se.sics.nat.stun.upnp.hooks.UpnpHookFactory;
 import se.sics.p2ptoolbox.simulator.cmd.impl.SetupCmd;
 import se.sics.p2ptoolbox.simulator.cmd.impl.StartNodeCmd;
 import se.sics.p2ptoolbox.simulator.dsl.SimulationScenario;
@@ -89,7 +92,7 @@ public class ScenarioGen {
                                 int openType = 0;
                                 ScenarioSetup.ScenarioNat scenarioNatType = ScenarioSetup.ScenarioNat.values()[openType];
                                 InetAddress self = ScenarioSetup.getLocalIp(nodeId, scenarioNatType);
-                                selfAdr = DecoratedAddress.open(self, ScenarioSetup.nodePort, nodeId);
+                                selfAdr = DecoratedAddress.open(self, ScenarioSetup.appPort, nodeId);
                             }
                         }
 
@@ -117,11 +120,11 @@ public class ScenarioGen {
                             
                             KConfigCore configCore = new KConfigCore(ConfigFactory.load());
                             configCore.writeValue(SystemKConfig.id, nodeId);
+                            configCore.writeValue(SystemKConfig.port, ScenarioSetup.appPort);
                             configCore.writeValue(SystemKConfig.seed, ScenarioSetup.baseSeed + nodeId);
                             configCore.writeValue(NetworkMngrKConfig.prefferedInterface, selfAdr.getIp().getHostAddress());
                             configCore.writeValue(StunServerKConfig.stunServerPort1, ScenarioSetup.stunServerPorts.getValue0());
                             configCore.writeValue(StunServerKConfig.stunServerPort2, ScenarioSetup.stunServerPorts.getValue1());
-                            configCore.writeValue(StunServerKConfig.nodePort, ScenarioSetup.nodePort);
                             configCore.writeValue(OverlayMngrConfig.bootstrap, boot);
 
                             SystemHookSetup systemHooks = new SystemHookSetup();
@@ -155,7 +158,7 @@ public class ScenarioGen {
                             } else {
                                 ScenarioSetup.ScenarioNat scenarioNatType = ScenarioSetup.ScenarioNat.values()[natType];
                                 InetAddress self = ScenarioSetup.getLocalIp(nodeId, scenarioNatType);
-                                selfAdr = DecoratedAddress.open(self, ScenarioSetup.nodePort, nodeId);
+                                selfAdr = DecoratedAddress.open(self, ScenarioSetup.appPort, nodeId);
                             }
                         }
 
@@ -182,13 +185,16 @@ public class ScenarioGen {
                             KConfigCore configCore = new KConfigCore(ConfigFactory.load());
                             configCore.writeValue(SystemKConfig.id, nodeId);
                             configCore.writeValue(SystemKConfig.seed, ScenarioSetup.baseSeed + nodeId);
+                            configCore.writeValue(SystemKConfig.port, ScenarioSetup.appPort);
                             configCore.writeValue(NetworkMngrKConfig.prefferedInterface, selfAdr.getIp().getHostAddress());
-                            configCore.writeValue(NodeKConfig.port, ScenarioSetup.nodePort);
+                            configCore.writeValue(StunClientKConfig.stunClientPort1, ScenarioSetup.stunClientPorts.getValue0());
+                            configCore.writeValue(StunClientKConfig.stunClientPort2, ScenarioSetup.stunClientPorts.getValue1());
                             configCore.writeValue(OverlayMngrConfig.bootstrap, boot);
 
                             SystemHookSetup systemHooks = new SystemHookSetup();
                             systemHooks.register(NetworkMngrHooks.RequiredHooks.IP_SOLVER.hookName, IpSolverHookFactory.getIpSolverEmulator());
                             systemHooks.register(NetworkMngrHooks.RequiredHooks.PORT_BINDING.hookName, PortBindingHookFactory.getPortBinderEmulator());
+                            systemHooks.register(NatDetectionHooks.RequiredHooks.UPNP.hookName, UpnpHookFactory.getNoUpnp());
                             return new NatEmulatorHostComp.NatEmulatorHostInit(configCore, systemHooks,
                                     NodeHostComp.class, new NodeHostInit(configCore, systemHooks));
                         }
@@ -230,8 +236,9 @@ public class ScenarioGen {
                     }
                 };
                 setup.start();
-                stunServers.startAfterTerminationOf(5000, setup);
-                terminateAfterTerminationOf(100000, stunServers);
+                stunServers.startAfterTerminationOf(2000, setup);
+                natedNodes.startAfterTerminationOf(10000, stunServers);
+                terminateAfterTerminationOf(100000, natedNodes);
             }
         };
         return scen;
