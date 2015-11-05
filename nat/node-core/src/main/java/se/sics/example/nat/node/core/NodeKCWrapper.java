@@ -19,9 +19,7 @@
 package se.sics.example.nat.node.core;
 
 import se.sics.p2ptoolbox.util.config.KConfigCore;
-import se.sics.p2ptoolbox.util.config.KConfigHelper;
 import se.sics.p2ptoolbox.util.config.impl.SystemKCWrapper;
-import se.sics.p2ptoolbox.util.network.impl.DecoratedAddress;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>

@@ -37,6 +37,7 @@ import se.sics.ktoolbox.networkmngr.NetworkMngrKConfig;
 import se.sics.ktoolbox.networkmngr.hooks.PortBindingHookFactory;
 import se.sics.ktoolbox.overlaymngr.OverlayMngrConfig;
 import se.sics.nat.NatDetectionHooks;
+import se.sics.nat.emulator.NatEmulatorComp.NatEmulatorInit;
 import se.sics.nat.stun.client.StunClientKConfig;
 import se.sics.nat.stun.server.StunServerHostComp;
 import se.sics.nat.stun.server.StunServerHostComp.StunServerHostInit;
@@ -85,7 +86,7 @@ public class ScenarioGen {
                     return new StartNodeCmd<SimHostComp, DecoratedAddress>() {
                         private DecoratedAddress selfAdr;
 
-                       {
+                        {
                             if (nodeId == 0) {
                                 selfAdr = ScenarioSetup.globalCroupierBoot;
                             } else {
@@ -117,7 +118,7 @@ public class ScenarioGen {
                             if (nodeId != 0) {
                                 boot.add(ScenarioSetup.globalCroupierBoot);
                             }
-                            
+
                             KConfigCore configCore = new KConfigCore(ConfigFactory.load());
                             configCore.writeValue(SystemKConfig.id, nodeId);
                             configCore.writeValue(SystemKConfig.port, ScenarioSetup.appPort);
@@ -175,7 +176,7 @@ public class ScenarioGen {
                         @Override
                         public Init getNodeComponentInit(DecoratedAddress aggregator, Set<DecoratedAddress> bootstrap) {
                             ScenarioSetup.ScenarioNat scenarioNatType = ScenarioSetup.ScenarioNat.values()[natType];
-//                          NatEmulatorInit natEInit = ScenarioSetup.getNatEmulator(nodeId, scenarioNatType);
+                            NatEmulatorInit natEInit = ScenarioSetup.getNatEmulator(nodeId, scenarioNatType);
 
                             List<DecoratedAddress> boot = new ArrayList<>();
                             if (nodeId != 0) {
@@ -196,7 +197,7 @@ public class ScenarioGen {
                             systemHooks.register(NetworkMngrHooks.RequiredHooks.PORT_BINDING.hookName, PortBindingHookFactory.getPortBinderEmulator());
                             systemHooks.register(NatDetectionHooks.RequiredHooks.UPNP.hookName, UpnpHookFactory.getNoUpnp());
                             return new NatEmulatorHostComp.NatEmulatorHostInit(configCore, systemHooks,
-                                    NodeHostComp.class, new NodeHostInit(configCore, systemHooks));
+                                    NodeHostComp.class, new NodeHostInit(configCore, systemHooks), natEInit);
                         }
 
                         @Override
@@ -228,17 +229,25 @@ public class ScenarioGen {
                         raise(4, startStunServer, new BasicIntSequentialDistribution(0));
                     }
                 };
-                StochasticProcess natedNodes = new StochasticProcess() {
+                StochasticProcess openNodes = new StochasticProcess() {
                     {
                         eventInterArrivalTime(constant(1000));
                         raise(3, startNode, new BasicIntSequentialDistribution(100),
                                 new ConstantDistribution<>(Integer.class, 0));
                     }
                 };
+                StochasticProcess nat1Nodes = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(2, startNode, new BasicIntSequentialDistribution(200),
+                                new ConstantDistribution<>(Integer.class, 1));
+                    }
+                };
                 setup.start();
                 stunServers.startAfterTerminationOf(2000, setup);
-                natedNodes.startAfterTerminationOf(10000, stunServers);
-                terminateAfterTerminationOf(100000, natedNodes);
+                openNodes.startAfterTerminationOf(10000, stunServers);
+                nat1Nodes.startAfterTerminationOf(10000, openNodes);
+                terminateAfterTerminationOf(100000, nat1Nodes);
             }
         };
         return scen;

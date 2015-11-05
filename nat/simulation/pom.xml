@@ -26,6 +26,11 @@
         </dependency>
         
         <dependency>
+            <groupId>se.sics.nat</groupId>
+            <artifactId>nat-emulator</artifactId>
+            <version>${nat.version}</version>
+        </dependency>
+        <dependency>
             <groupId>se.sics.nat.stun.server</groupId>
             <artifactId>core</artifactId>
             <version>${nat.version}</version>

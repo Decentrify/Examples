@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import org.javatuples.Pair;
+import se.sics.nat.emulator.NatEmulatorComp.NatEmulatorInit;
 import se.sics.p2ptoolbox.util.helper.SystemConfigBuilder;
 import se.sics.p2ptoolbox.util.nat.Nat;
 import se.sics.p2ptoolbox.util.nat.NatedTrait;
@@ -59,19 +60,19 @@ public class ScenarioSetup {
         globalCroupierBoot = DecoratedAddress.open(getLocalIp(0, ScenarioNat.OP), appPort, 0);
     }
 
-//    public static NatEmulatorInit getNatEmulator(int natId, ScenarioNat natType) {
-//        long natSeed = baseSeed + natId;
-//        NatedTrait nat = nats[natType.ordinal()];
-//        InetAddress natIp = null;
-//        try {
-//            natIp = InetAddress.getByName(natType.publicIp + natId);
-//        } catch (UnknownHostException ex) {
-//            System.out.println("scenario setup ip exception");
-//            throw new RuntimeException("scenario setup", ex);
-//        }
-//        
-//        return new NatEmulatorInit(natSeed, nat, natIp, natId);
-//    }
+    public static NatEmulatorInit getNatEmulator(int natId, ScenarioNat natType) {
+        long natSeed = baseSeed + natId;
+        NatedTrait nat = nats[natType.ordinal()];
+        InetAddress natIp = null;
+        try {
+            natIp = InetAddress.getByName(natType.publicIp + natId);
+        } catch (UnknownHostException ex) {
+            System.out.println("scenario setup ip exception");
+            throw new RuntimeException("scenario setup", ex);
+        }
+        
+        return new NatEmulatorInit(natSeed, nat, natIp, natId);
+    }
     
     public static SystemConfigBuilder getSystemConfig(int nodeId, ScenarioNat natType) {
         long nodeSeed = baseSeed + nodeId;

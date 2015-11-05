@@ -30,6 +30,8 @@ import se.sics.kompics.network.Network;
 import se.sics.kompics.timer.Timer;
 import se.sics.ktoolbox.networkmngr.NetworkMngrHooks;
 import se.sics.ktoolbox.networkmngr.hooks.NetworkHookFactory;
+import se.sics.nat.emulator.NatEmulatorComp;
+import se.sics.nat.emulator.NatEmulatorComp.NatEmulatorInit;
 import se.sics.p2ptoolbox.util.config.KConfigCore;
 import se.sics.p2ptoolbox.util.config.impl.SystemKCWrapper;
 import se.sics.p2ptoolbox.util.proxy.SystemHookSetup;
@@ -57,7 +59,12 @@ public class NatEmulatorHostComp extends ComponentDefinition {
         LOG.info("{}initiating", logPrefix);
         subscribe(handleStart, control);
 
-        systemHooks.register(NetworkMngrHooks.RequiredHooks.NETWORK.hookName, NetworkHookFactory.getNetworkEmulator(network));
+        natEmulator = create(NatEmulatorComp.class, init.natInit);
+        connect(natEmulator.getNegative(Timer.class), timer);
+        connect(natEmulator.getNegative(Network.class), network);
+        systemHooks.register(NetworkMngrHooks.RequiredHooks.NETWORK.hookName, 
+                NetworkHookFactory.getNetworkEmulator(natEmulator.getPositive(Network.class)));
+        
         host = create(init.hostClass, init.hostInit);
         connect(host.getNegative(Timer.class), timer);
     }
@@ -74,12 +81,15 @@ public class NatEmulatorHostComp extends ComponentDefinition {
         public final SystemHookSetup systemHooks;
         public final Class hostClass;
         public final Init hostInit;
+        public final NatEmulatorInit natInit;
         
-        public NatEmulatorHostInit(KConfigCore config, SystemHookSetup systemHooks, Class hostClass, Init hostInit) {
+        public NatEmulatorHostInit(KConfigCore config, SystemHookSetup systemHooks, Class hostClass, Init hostInit,
+                NatEmulatorInit natInit) {
             this.config = new SystemKCWrapper(config);
             this.systemHooks = systemHooks;
             this.hostClass = hostClass;
             this.hostInit = hostInit;
+            this.natInit = natInit;
         }
     }
 }
