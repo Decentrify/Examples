@@ -28,10 +28,10 @@ import se.sics.kompics.Positive;
 import se.sics.kompics.Start;
 import se.sics.kompics.network.Network;
 import se.sics.kompics.timer.Timer;
-import se.sics.ktoolbox.networkmngr.NetworkMngrHooks;
-import se.sics.ktoolbox.networkmngr.hooks.NetworkHookFactory;
+import se.sics.p2ptoolbox.util.network.hooks.NetworkHookFactory;
 import se.sics.nat.emulator.NatEmulatorComp;
 import se.sics.nat.emulator.NatEmulatorComp.NatEmulatorInit;
+import se.sics.nat.hooks.BaseHooks;
 import se.sics.p2ptoolbox.util.config.KConfigCore;
 import se.sics.p2ptoolbox.util.config.impl.SystemKCWrapper;
 import se.sics.p2ptoolbox.util.proxy.SystemHookSetup;
@@ -62,7 +62,7 @@ public class NatEmulatorHostComp extends ComponentDefinition {
         natEmulator = create(NatEmulatorComp.class, init.natInit);
         connect(natEmulator.getNegative(Timer.class), timer);
         connect(natEmulator.getNegative(Network.class), network);
-        systemHooks.register(NetworkMngrHooks.RequiredHooks.NETWORK.hookName, 
+        systemHooks.register(BaseHooks.RequiredHooks.NETWORK.hookName, 
                 NetworkHookFactory.getNetworkEmulator(natEmulator.getPositive(Network.class)));
         
         host = create(init.hostClass, init.hostInit);

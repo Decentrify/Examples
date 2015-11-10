@@ -19,7 +19,6 @@
 package se.sics.example.nat.node.core;
 
 import java.util.UUID;
-import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.kompics.Component;
@@ -31,29 +30,17 @@ import se.sics.kompics.Positive;
 import se.sics.kompics.Start;
 import se.sics.kompics.network.Network;
 import se.sics.kompics.timer.Timer;
-import se.sics.ktoolbox.networkmngr.NetworkKCWrapper;
-import se.sics.ktoolbox.networkmngr.NetworkMngrComp;
-import se.sics.ktoolbox.networkmngr.NetworkMngrPort;
-import se.sics.ktoolbox.networkmngr.events.Bind;
-import se.sics.ktoolbox.networkmngr.events.NetworkMngrReady;
-import se.sics.ktoolbox.overlaymngr.OverlayMngrComp;
-import se.sics.ktoolbox.overlaymngr.OverlayMngrComp.OverlayMngrInit;
 import se.sics.ktoolbox.overlaymngr.OverlayMngrPort;
 import se.sics.ktoolbox.overlaymngr.events.OMngrCroupier;
-import se.sics.nat.NatDetectionComp;
-import se.sics.nat.NatDetectionComp.NatDetectionInit;
-import se.sics.nat.NatDetectionPort;
-import se.sics.nat.NatTraverserComp;
-import se.sics.nat.NatTraverserComp.NatTraverserInit;
-import se.sics.nat.stun.NatDetected;
-import se.sics.nat.util.NatStatus;
+import se.sics.nat.manager.NatManagerComp;
+import se.sics.nat.manager.NatManagerComp.NatManagerInit;
+import se.sics.nat.manager.NatManagerReady;
+import se.sics.nat.network.NetworkKCWrapper;
 import se.sics.p2ptoolbox.croupier.CroupierPort;
 import se.sics.p2ptoolbox.util.config.KConfigCore;
-import se.sics.p2ptoolbox.util.nat.Nat;
-import se.sics.p2ptoolbox.util.network.impl.BasicAddress;
 import se.sics.p2ptoolbox.util.network.impl.DecoratedAddress;
 import se.sics.p2ptoolbox.util.proxy.SystemHookSetup;
-import se.sics.p2ptoolbox.util.status.Ready;
+import se.sics.p2ptoolbox.util.status.Status;
 import se.sics.p2ptoolbox.util.status.StatusPort;
 import se.sics.p2ptoolbox.util.update.SelfAddressUpdate;
 import se.sics.p2ptoolbox.util.update.SelfAddressUpdatePort;
@@ -73,14 +60,10 @@ public class NodeHostComp extends ComponentDefinition {
     private final SystemHookSetup systemHooks;
     private NetworkKCWrapper networkConfig;
 
-    private Component networkMngr;
-    private Component overlayMngr;
-    private Component natDetection;
-    private Component natTraverser;
+    private Component natMngr;
     private Component nodeComp;
 
     private DecoratedAddress selfAdr = null;
-    private Pair<UUID, UUID> nodeBindings = Pair.with(UUID.randomUUID(), UUID.randomUUID());
 
     public NodeHostComp(NodeHostInit init) {
         this.config = init.config;
@@ -89,7 +72,6 @@ public class NodeHostComp extends ComponentDefinition {
         LOG.info("{}initializing with seed:{}", logPrefix, config.system.seed);
 
         subscribe(handleStart, control);
-        connectNetworkMngr(true);
     }
 
     //*************************CONTROL******************************************
@@ -97,6 +79,7 @@ public class NodeHostComp extends ComponentDefinition {
         @Override
         public void handle(Start event) {
             LOG.info("{}starting...", logPrefix);
+            connectNatManager();
         }
     };
 
@@ -106,100 +89,12 @@ public class NodeHostComp extends ComponentDefinition {
         System.exit(1);
         return Fault.ResolveAction.RESOLVED;
     }
-
-    private void connectNetworkMngr(boolean started) {
-        networkMngr = create(NetworkMngrComp.class, new NetworkMngrComp.NetworkMngrInit(config.configCore, systemHooks));
-        subscribe(handleNetworkMngrReady, networkMngr.getPositive(NetworkMngrPort.class));
-        subscribe(handleBindPort, networkMngr.getPositive(NetworkMngrPort.class));
-    }
-
-    Handler handleNetworkMngrReady = new Handler<NetworkMngrReady>() {
-        @Override
-        public void handle(NetworkMngrReady event) {
-            networkConfig = new NetworkKCWrapper(config.configCore);
-            LOG.info("{}network manager ready on local interface:{}", logPrefix, networkConfig.localIp);
-
-            //TODO Alex - using port + 1 due to nat emulator - since I need to comnmunicate outside before i know public address - maybe fix later
-            selfAdr = DecoratedAddress.open(networkConfig.localIp, config.system.port + 1, config.system.id);
-            bind(selfAdr);
-        }
-    };
-
-    private void bind(DecoratedAddress adr) {
-        Bind.Request req = new Bind.Request(nodeBindings.getValue0(), selfAdr, true);
-        LOG.trace("{}bind request:{} adr:{}", new Object[]{logPrefix, req.id, selfAdr});
-        trigger(req, networkMngr.getPositive(NetworkMngrPort.class));
-    }
-
-    Handler handleBindPort = new Handler<Bind.Response>() {
-        @Override
-        public void handle(Bind.Response resp) {
-            selfAdr = selfAdr.changePort(resp.boundPort);
-            LOG.info("{}bind response:{} adr:{}", new Object[]{logPrefix, resp.req.id, selfAdr});
-            if (resp.req.id.equals(nodeBindings.getValue0())) {
-                connectOverlayMngr();
-                connectNatDetection();
-                LOG.info("{}waiting for nat detection...", logPrefix);
-            } else if (resp.req.id.equals(nodeBindings.getValue1())) {
-                trigger(new SelfAddressUpdate(selfAdr), overlayMngr.getNegative(SelfAddressUpdatePort.class));
-                connectNatTraverser();
-                LOG.info("{} waiting for nat traverser...", logPrefix);
-            }
-        }
-    };
-
-    private void connectOverlayMngr() {
-        overlayMngr = create(OverlayMngrComp.class, new OverlayMngrInit(config.configCore, selfAdr));
-        connect(overlayMngr.getNegative(Timer.class), timer);
-        connect(overlayMngr.getNegative(Network.class), networkMngr.getPositive(Network.class));
-
-        trigger(Start.event, overlayMngr.control());
-    }
-
-    private void connectNatDetection() {
-        natDetection = create(NatDetectionComp.class, new NatDetectionInit(config.configCore, systemHooks));
-        connect(natDetection.getNegative(Timer.class), timer);
-        connect(natDetection.getNegative(Network.class), networkMngr.getPositive(Network.class));
-        connect(natDetection.getNegative(NetworkMngrPort.class), networkMngr.getPositive(NetworkMngrPort.class));
-        connect(natDetection.getNegative(OverlayMngrPort.class), overlayMngr.getPositive(OverlayMngrPort.class));
-
-        trigger(Start.event, natDetection.control());
-        subscribe(handleNatReady, natDetection.getPositive(NatDetectionPort.class));
-    }
-
-    Handler handleNatReady = new Handler<NatDetected>() {
-        @Override
-        public void handle(NatDetected event) {
-            LOG.info("{}nat detection ready", logPrefix);
-            if (event.nat.type.equals(Nat.Type.OPEN)) {
-                LOG.info("{}open node", logPrefix);
-                selfAdr = DecoratedAddress.open(selfAdr.getIp(), config.system.port, config.system.id);
-            } else if (event.nat.type.equals(Nat.Type.NAT)) {
-                LOG.info("{}detected nat:{} public ip:{}",
-                        new Object[]{logPrefix, event.nat.type, event.publicIp.get().getHostAddress()});
-                selfAdr = new DecoratedAddress(new BasicAddress(event.publicIp.get(), config.system.port, config.system.id));
-                selfAdr.addTrait(event.nat);
-            } else {
-                LOG.error("{}not yet handling nat result:{}", logPrefix, event.nat);
-                throw new RuntimeException("not yet handling nat result:" + event.nat);
-            }
-            bind(selfAdr);
-        }
-    };
-
-    //****************************NAT TRAVERSER STEP****************************
-    private void connectNatTraverser() {
-        natTraverser = create(NatTraverserComp.class, new NatTraverserInit(config.configCore, systemHooks, selfAdr));
-        connect(natTraverser.getNegative(Timer.class), timer);
-        connect(natTraverser.getNegative(Network.class), networkMngr.getPositive(Network.class));
-        connect(natTraverser.getNegative(OverlayMngrPort.class), overlayMngr.getPositive(OverlayMngrPort.class));
-        //TODO Alex connect fd
-
-        connect(overlayMngr.getNegative(SelfAddressUpdatePort.class), natTraverser.getPositive(SelfAddressUpdatePort.class));
-        subscribe(handleNatTraverserReady, natTraverser.getPositive(StatusPort.class));
-        subscribe(handleSelfAddressUpdate, natTraverser.getPositive(SelfAddressUpdatePort.class));
-
-        trigger(Start.event, natTraverser.control());
+    
+    private void connectNatManager() {
+        natMngr = create(NatManagerComp.class, new NatManagerInit(config.configCore, systemHooks));
+        connect(natMngr.getNegative(Timer.class), timer);
+        subscribe(handleNatManagerReady, natMngr.getPositive(StatusPort.class));
+        trigger(Start.event, natMngr.control());
     }
 
     Handler handleSelfAddressUpdate = new Handler<SelfAddressUpdate>() {
@@ -209,42 +104,42 @@ public class NodeHostComp extends ComponentDefinition {
             LOG.info("{}changed self address:{}", new Object[]{logPrefix, selfAdr});
         }
     };
-
-    Handler handleNatTraverserReady = new Handler<Ready<NatStatus>>() {
+    
+    Handler handleNatManagerReady = new Handler<Status.Internal<NatManagerReady>>() {
         @Override
-        public void handle(Ready<NatStatus> event) {
-            LOG.info("{}nat traverser ready", logPrefix);
+        public void handle(Status.Internal<NatManagerReady> ready) {
+            LOG.info("{}nat manager ready", logPrefix);
+            selfAdr = ready.status.selfAdr;
+            connectApp();
+            setupAppCroupier();
         }
     };
 
     private void connectApp() {
         nodeComp = create(NodeComp.class, new NodeComp.NodeInit(config.configCore, selfAdr));
         connect(nodeComp.getNegative(Timer.class), timer);
-        connect(nodeComp.getNegative(Network.class), networkMngr.getPositive(Network.class));
+        connect(nodeComp.getNegative(Network.class), natMngr.getPositive(Network.class));
+        connect(nodeComp.getNegative(SelfAddressUpdatePort.class), natMngr.getPositive(SelfAddressUpdatePort.class));
     }
 
     private void setupAppCroupier() {
-        subscribe(handleAppCroupierReady, overlayMngr.getPositive(OverlayMngrPort.class));
+        subscribe(handleAppCroupierReady, natMngr.getPositive(OverlayMngrPort.class));
 
         OMngrCroupier.ConnectRequestBuilder reqBuilder = new OMngrCroupier.ConnectRequestBuilder(UUID.randomUUID());
-        reqBuilder.setIdentifiers(OverlayIds.globalCroupier, OverlayIds.appCroupier);
+        reqBuilder.setIdentifiers(config.globalCroupier.array(), config.pingService.array());
         reqBuilder.setupCroupier(false);
         reqBuilder.connectTo(nodeComp.getNegative(CroupierPort.class), nodeComp.getPositive(SelfViewUpdatePort.class));
         LOG.info("{}waiting for croupier app...", logPrefix);
-        trigger(reqBuilder.build(), overlayMngr.getPositive(OverlayMngrPort.class));
+        trigger(reqBuilder.build(), natMngr.getPositive(OverlayMngrPort.class));
     }
 
     Handler handleAppCroupierReady = new Handler<OMngrCroupier.ConnectResponse>() {
         @Override
         public void handle(OMngrCroupier.ConnectResponse resp) {
             LOG.info("{}app croupier ready", logPrefix);
-            startApp();
+            trigger(Start.event, nodeComp.control());
         }
     };
-
-    private void startApp() {
-        trigger(Start.event, nodeComp.control());
-    }
 
     public static class NodeHostInit extends Init<NodeHostComp> {
 

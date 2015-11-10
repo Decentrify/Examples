@@ -28,10 +28,11 @@ import se.sics.kompics.Positive;
 import se.sics.kompics.Start;
 import se.sics.kompics.network.Network;
 import se.sics.kompics.timer.Timer;
-import se.sics.ktoolbox.networkmngr.NetworkMngrHooks;
-import se.sics.ktoolbox.networkmngr.hooks.NetworkHookFactory;
+import se.sics.nat.hooks.BaseHooks;
+import se.sics.p2ptoolbox.util.network.hooks.NetworkHookFactory;
 import se.sics.p2ptoolbox.util.config.KConfigCore;
 import se.sics.p2ptoolbox.util.config.impl.SystemKCWrapper;
+import se.sics.p2ptoolbox.util.network.impl.DecoratedAddress;
 import se.sics.p2ptoolbox.util.proxy.SystemHookSetup;
 
 /**
@@ -43,21 +44,21 @@ public class SimHostComp extends ComponentDefinition {
     private Logger LOG = LoggerFactory.getLogger(SimHostComp.class);
     private String logPrefix = "";
 
-    private Positive<Network> network = requires(Network.class);
-    private Positive<Timer> timer = requires(Timer.class);
+    private final Positive<Network> network = requires(Network.class);
+    private final Positive<Timer> timer = requires(Timer.class);
     
     private final SystemKCWrapper config;
     private final SystemHookSetup systemHooks;
-    private Component host;
+    private final Component host;
     
     public SimHostComp(SimHostInit init) {
         config = init.config;
         systemHooks = init.systemHooks;
-        logPrefix = "<" + config.id + "> ";
+        logPrefix = "<nid:" + config.id + "> ";
         LOG.info("{}initiating", logPrefix);
         subscribe(handleStart, control);
 
-        systemHooks.register(NetworkMngrHooks.RequiredHooks.NETWORK.hookName, NetworkHookFactory.getNetworkEmulator(network));
+        systemHooks.register(BaseHooks.RequiredHooks.NETWORK.hookName, NetworkHookFactory.getNetworkEmulator(network));
         host = create(init.hostClass, init.hostInit);
         connect(host.getNegative(Timer.class), timer);
     }

@@ -18,15 +18,14 @@
  */
 package se.sics.example.nat.node.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import se.sics.example.nat.node.msg.NodeMsg;
 import java.util.Set;
 import java.util.UUID;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.kompics.ClassMatchedHandler;
@@ -51,6 +50,7 @@ import se.sics.p2ptoolbox.util.config.KConfigCore;
 import se.sics.p2ptoolbox.util.nat.Nat;
 import se.sics.p2ptoolbox.util.nat.NatedTrait;
 import se.sics.p2ptoolbox.util.network.ContentMsg;
+import se.sics.p2ptoolbox.util.network.impl.BasicAddress;
 import se.sics.p2ptoolbox.util.network.impl.BasicContentMsg;
 import se.sics.p2ptoolbox.util.network.impl.DecoratedAddress;
 import se.sics.p2ptoolbox.util.network.impl.DecoratedHeader;
@@ -75,9 +75,9 @@ public class NodeComp extends ComponentDefinition {
 
     private final NodeKCWrapper config;
     private DecoratedAddress self;
-    private Map<DecoratedAddress, Integer> ping = new HashMap<>();
-    private List<DecoratedAddress> ponged = new ArrayList<>();
-    private List<DecoratedAddress> missed = new ArrayList<>();
+    private Map<BasicAddress, Pair<DecoratedAddress, Integer>> ping = new HashMap<>();
+    private Map<BasicAddress, DecoratedAddress> ponged = new HashMap<>();
+    private Map<BasicAddress, DecoratedAddress> missed = new HashMap<>();
     private Set<String> unfeasible = new HashSet<>();
 
     private UUID pingTId;
@@ -86,7 +86,7 @@ public class NodeComp extends ComponentDefinition {
     public NodeComp(NodeInit init) {
         config = init.config;
         self = init.self;
-        logPrefix = "<" + self.getBase().toString() + "> ";
+        logPrefix = "<nid:" + config.system.id + "> ";
         LOG.info("{}initiating with self:{}",
                 new Object[]{logPrefix, self});
 
@@ -120,7 +120,8 @@ public class NodeComp extends ComponentDefinition {
     };
 
     private void checkStart() {
-        if (self.getTrait(NatedTrait.class).type.equals(Nat.Type.OPEN)) {
+        if (self.getTrait(NatedTrait.class).type.equals(Nat.Type.OPEN)
+                || self.getTrait(NatedTrait.class).type.equals(Nat.Type.NAT)) {
             schedulePing();
         } else {
             LOG.error("{}unhandled address type:{}", logPrefix, self.getTrait(NatedTrait.class).type);
@@ -131,59 +132,66 @@ public class NodeComp extends ComponentDefinition {
     Handler handleStatusCheck = new Handler<PeriodicStatusCheck>() {
         @Override
         public void handle(PeriodicStatusCheck event) {
-            LOG.info("{} pending:{} ponged:{} missed:{} unfeasible:{}",
-                    new Object[]{logPrefix, ping, ponged, missed, unfeasible});
+            LOG.info("{}pending:{} ponged:{} missed:{} unfeasible:{}",
+                    new Object[]{logPrefix, ping.keySet(), ponged.values(), missed.values(), unfeasible});
         }
     };
-    
+
     Handler handleCroupierSample = new Handler<CroupierSample<NodeView>>() {
         @Override
         public void handle(CroupierSample<NodeView> sample) {
-            for(Container<DecoratedAddress, NodeView> node : sample.publicSample) {
-                if(ping.containsKey(node.getSource()) || ponged.contains(node.getSource()) 
-                        || missed.contains(node.getSource())) {
-                    continue;
-                }
-                ping.put(node.getSource(), config.pingRetry);
-            }
+            LOG.trace("{}public sample:{}", new Object[]{logPrefix, sample.publicSample});
+            LOG.trace("{}private sample:{}", new Object[]{logPrefix, sample.privateSample});
+            selectPingTargets(sample.publicSample);
+            selectPingTargets(sample.privateSample);
         }
     };
+
+    private void selectPingTargets(Set<Container<DecoratedAddress, NodeView>> sample) {
+        for (Container<DecoratedAddress, NodeView> node : sample) {
+            if (ping.containsKey(node.getSource().getBase()) || ponged.containsKey(node.getSource().getBase())
+                    || missed.containsKey(node.getSource().getBase())) {
+                continue;
+            }
+            ping.put(node.getSource().getBase(), Pair.with(node.getSource(), config.pingRetry));
+        }
+    }
 
     Handler handlePingTimeout = new Handler<PeriodicPing>() {
 
         @Override
         public void handle(PeriodicPing event) {
-            Iterator<Map.Entry<DecoratedAddress, Integer>> it = ping.entrySet().iterator();
+            Iterator<Pair<DecoratedAddress, Integer>> it = ping.values().iterator();
             while (it.hasNext()) {
-                Map.Entry<DecoratedAddress, Integer> target = it.next();
-                if(ponged.contains(target.getKey())) {
+                Pair<DecoratedAddress, Integer> target = it.next();
+                if (ponged.containsKey(target.getValue0().getBase())) {
                     it.remove();
                     continue;
                 }
-                if (target.getValue() > 0) {
-                    ping(target.getKey());
+                if (target.getValue1() > 0) {
+                    ping(target.getValue0());
                 } else {
                     it.remove();
-                    missed.add(target.getKey());
+                    missed.put(target.getValue0().getBase(), target.getValue0());
                 }
             }
-            for(DecoratedAddress target : ping.keySet()) {
-                ping.put(target, ping.get(target) - 1);
+            for (Map.Entry<BasicAddress, Pair<DecoratedAddress, Integer>> target : ping.entrySet()) {
+                ping.put(target.getKey(), Pair.with(target.getValue().getValue0(), target.getValue().getValue1() - 1));
             }
         }
     };
-    
+
     private void ping(DecoratedAddress target) {
         DecoratedHeader<DecoratedAddress> pingHeader = new DecoratedHeader(self, target, Transport.UDP);
         ContentMsg pingMsg = new BasicContentMsg(pingHeader, new NodeMsg.Ping());
-        LOG.info("{}pinging from:{} to:{}", new Object[]{logPrefix, self, target});
+        LOG.debug("{}pinging from:{} to:{}", new Object[]{logPrefix, self, target});
         trigger(pingMsg, network);
     }
 
     Handler handlePinged = new Handler<Pinged.Request>() {
         @Override
         public void handle(Pinged.Request req) {
-            answer(req, req.answer(self, ponged));
+            answer(req, req.answer(self, ponged.values()));
         }
     };
 
@@ -191,7 +199,7 @@ public class NodeComp extends ComponentDefinition {
             = new ClassMatchedHandler<NodeMsg.Ping, BasicContentMsg<DecoratedAddress, DecoratedHeader<DecoratedAddress>, NodeMsg.Ping>>() {
                 @Override
                 public void handle(NodeMsg.Ping content, BasicContentMsg<DecoratedAddress, DecoratedHeader<DecoratedAddress>, NodeMsg.Ping> container) {
-                    LOG.info("{}ping from:{} on:{}",
+                    LOG.debug("{}ping from:{} on:{}",
                             new Object[]{logPrefix, container.getSource(), container.getDestination()});
                     DecoratedHeader<DecoratedAddress> pongHeader = new DecoratedHeader(self, container.getSource(), Transport.UDP);
                     ContentMsg pongMsg = new BasicContentMsg(pongHeader, new NodeMsg.Pong());
@@ -203,9 +211,9 @@ public class NodeComp extends ComponentDefinition {
             = new ClassMatchedHandler<NodeMsg.Pong, BasicContentMsg<DecoratedAddress, DecoratedHeader<DecoratedAddress>, NodeMsg.Pong>>() {
                 @Override
                 public void handle(NodeMsg.Pong content, BasicContentMsg<DecoratedAddress, DecoratedHeader<DecoratedAddress>, NodeMsg.Pong> container) {
-                    LOG.info("{}pong from:{} on:{}",
+                    LOG.debug("{}pong from:{} on:{}",
                             new Object[]{logPrefix, container.getSource(), container.getDestination()});
-                    ponged.add(container.getSource());
+                    ponged.put(container.getSource().getBase(), container.getSource());
                 }
             };
 

@@ -18,7 +18,10 @@
  */
 package se.sics.example.nat.node.core;
 
+import com.google.common.primitives.Ints;
+import java.nio.ByteBuffer;
 import se.sics.p2ptoolbox.util.config.KConfigCore;
+import se.sics.p2ptoolbox.util.config.KConfigHelper;
 import se.sics.p2ptoolbox.util.config.impl.SystemKCWrapper;
 
 /**
@@ -31,9 +34,13 @@ public class NodeKCWrapper {
     
     public final KConfigCore configCore;
     public final SystemKCWrapper system;
+    public final ByteBuffer globalCroupier;
+    public final ByteBuffer pingService;
     
     public NodeKCWrapper(KConfigCore configCore) {
         this.configCore = configCore;
-        this.system = new SystemKCWrapper(configCore);
+        system = new SystemKCWrapper(configCore);
+        globalCroupier = ByteBuffer.wrap(Ints.toByteArray(KConfigHelper.read(configCore, NodeKConfig.globalCroupier)));
+        pingService = ByteBuffer.wrap(Ints.toByteArray(KConfigHelper.read(configCore, NodeKConfig.pingService)));
     }
 }

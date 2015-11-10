@@ -57,7 +57,7 @@ public class ScenarioSetup {
         nats[0] = NatedTrait.open();
         nats[1] = NatedTrait.nated(Nat.MappingPolicy.ENDPOINT_INDEPENDENT, Nat.AllocationPolicy.PORT_PRESERVATION, 0,
                 Nat.FilteringPolicy.ENDPOINT_INDEPENDENT, 10000, new ArrayList<DecoratedAddress>());
-        globalCroupierBoot = DecoratedAddress.open(getLocalIp(0, ScenarioNat.OP), appPort, 0);
+        globalCroupierBoot = DecoratedAddress.open(getLocalIp(1, ScenarioNat.OP), appPort, 1);
     }
 
     public static NatEmulatorInit getNatEmulator(int natId, ScenarioNat natType) {
@@ -70,7 +70,7 @@ public class ScenarioSetup {
             System.out.println("scenario setup ip exception");
             throw new RuntimeException("scenario setup", ex);
         }
-        
+        InetAddress privateIp = getLocalIp(natId, natType);
         return new NatEmulatorInit(natSeed, nat, natIp, natId);
     }
     

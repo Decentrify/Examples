@@ -22,15 +22,16 @@ import java.util.HashSet;
 import java.util.Set;
 import se.sics.p2ptoolbox.util.config.KConfigLevel;
 import se.sics.p2ptoolbox.util.config.KConfigOption.Basic;
-import se.sics.p2ptoolbox.util.config.options.OpenAddressOption;
 
 /**
  * @author Alex Ormenisan <aaor@kth.se>
  */
 public class NodeKConfig implements KConfigLevel {
-    public static final OpenAddressOption ping = new OpenAddressOption("ping", new NodeKConfig());
-    
-     @Override
+
+    public final static Basic<Integer> globalCroupier = new Basic("services.globalCroupier", Integer.class, new NodeKConfig());
+    public final static Basic<Integer> pingService = new Basic("services.ping", Integer.class, new NodeKConfig());
+
+    @Override
     public Set<String> canWrite() {
         Set<String> canWrite = new HashSet<>();
         canWrite.add(toString());

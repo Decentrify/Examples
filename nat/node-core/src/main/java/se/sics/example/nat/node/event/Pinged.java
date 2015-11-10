@@ -19,6 +19,7 @@
 
 package se.sics.example.nat.node.event;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -36,7 +37,7 @@ public class Pinged {
             this.id = id;
         }
         
-        public Response answer(DecoratedAddress self, List<DecoratedAddress> pinged) {
+        public Response answer(DecoratedAddress self, Collection<DecoratedAddress> pinged) {
             return new Response(id, self, pinged);
         }
     }
@@ -44,9 +45,9 @@ public class Pinged {
     public static class Response implements Direct.Response {
         public final UUID id;
         public final DecoratedAddress self;
-        public final List<DecoratedAddress> pinged;
+        public final Collection<DecoratedAddress> pinged;
         
-        public Response(UUID id, DecoratedAddress self, List<DecoratedAddress> pinged) {
+        public Response(UUID id, DecoratedAddress self, Collection<DecoratedAddress> pinged) {
             this.id = id;
             this.self = self;
             this.pinged = pinged;

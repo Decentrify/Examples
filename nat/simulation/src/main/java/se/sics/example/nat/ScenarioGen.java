@@ -29,20 +29,20 @@ import se.sics.example.nat.node.SimHostComp;
 import se.sics.example.nat.node.SimHostComp.SimHostInit;
 import se.sics.example.nat.node.core.NodeHostComp;
 import se.sics.example.nat.node.core.NodeHostComp.NodeHostInit;
-import se.sics.example.nat.node.core.NodeKConfig;
 import se.sics.kompics.Init;
 import se.sics.ktoolbox.ipsolver.hooks.IpSolverHookFactory;
-import se.sics.ktoolbox.networkmngr.NetworkMngrHooks;
-import se.sics.ktoolbox.networkmngr.NetworkMngrKConfig;
-import se.sics.ktoolbox.networkmngr.hooks.PortBindingHookFactory;
+import se.sics.nat.network.NetworkMngrKConfig;
+import se.sics.p2ptoolbox.util.network.hooks.PortBindingHookFactory;
 import se.sics.ktoolbox.overlaymngr.OverlayMngrConfig;
-import se.sics.nat.NatDetectionHooks;
+import se.sics.nat.detection.NatDetectionHooks;
 import se.sics.nat.emulator.NatEmulatorComp.NatEmulatorInit;
+import se.sics.nat.hooks.BaseHooks;
 import se.sics.nat.stun.client.StunClientKConfig;
 import se.sics.nat.stun.server.StunServerHostComp;
 import se.sics.nat.stun.server.StunServerHostComp.StunServerHostInit;
 import se.sics.nat.stun.server.StunServerKConfig;
 import se.sics.nat.stun.upnp.hooks.UpnpHookFactory;
+import se.sics.p2ptoolbox.simulator.cmd.impl.KillNodeCmd;
 import se.sics.p2ptoolbox.simulator.cmd.impl.SetupCmd;
 import se.sics.p2ptoolbox.simulator.cmd.impl.StartNodeCmd;
 import se.sics.p2ptoolbox.simulator.dsl.SimulationScenario;
@@ -115,7 +115,7 @@ public class ScenarioGen {
                         @Override
                         public Init<SimHostComp> getNodeComponentInit(DecoratedAddress aggregatorServer, Set<DecoratedAddress> bootstrapNodes) {
                             List<DecoratedAddress> boot = new ArrayList<>();
-                            if (nodeId != 0) {
+                            if (nodeId != 1) {
                                 boot.add(ScenarioSetup.globalCroupierBoot);
                             }
 
@@ -127,10 +127,11 @@ public class ScenarioGen {
                             configCore.writeValue(StunServerKConfig.stunServerPort1, ScenarioSetup.stunServerPorts.getValue0());
                             configCore.writeValue(StunServerKConfig.stunServerPort2, ScenarioSetup.stunServerPorts.getValue1());
                             configCore.writeValue(OverlayMngrConfig.bootstrap, boot);
-
+                            
                             SystemHookSetup systemHooks = new SystemHookSetup();
-                            systemHooks.register(NetworkMngrHooks.RequiredHooks.IP_SOLVER.hookName, IpSolverHookFactory.getIpSolverEmulator());
-                            systemHooks.register(NetworkMngrHooks.RequiredHooks.PORT_BINDING.hookName, PortBindingHookFactory.getPortBinderEmulator());
+                            systemHooks.register(BaseHooks.RequiredHooks.IP_SOLVER.hookName, IpSolverHookFactory.getIpSolverEmulator());
+                            systemHooks.register(BaseHooks.RequiredHooks.PORT_BINDING.hookName, PortBindingHookFactory.getPortBinderEmulator());
+                            systemHooks.register(NatDetectionHooks.RequiredHooks.UPNP.hookName, UpnpHookFactory.getNoUpnp());
                             return new SimHostInit(configCore, systemHooks, StunServerHostComp.class, new StunServerHostInit(configCore, systemHooks));
                         }
 
@@ -151,9 +152,9 @@ public class ScenarioGen {
                         private DecoratedAddress selfAdr;
 
                         {
-                            if (nodeId == 0) {
+                            if (nodeId == 1) {
                                 if (natType != 0) {
-                                    throw new RuntimeException("node 0 is expected to be open");
+                                    throw new RuntimeException("node 1 is expected to be open");
                                 }
                                 selfAdr = ScenarioSetup.globalCroupierBoot;
                             } else {
@@ -193,9 +194,10 @@ public class ScenarioGen {
                             configCore.writeValue(OverlayMngrConfig.bootstrap, boot);
 
                             SystemHookSetup systemHooks = new SystemHookSetup();
-                            systemHooks.register(NetworkMngrHooks.RequiredHooks.IP_SOLVER.hookName, IpSolverHookFactory.getIpSolverEmulator());
-                            systemHooks.register(NetworkMngrHooks.RequiredHooks.PORT_BINDING.hookName, PortBindingHookFactory.getPortBinderEmulator());
+                            systemHooks.register(BaseHooks.RequiredHooks.IP_SOLVER.hookName, IpSolverHookFactory.getIpSolverEmulator());
+                            systemHooks.register(BaseHooks.RequiredHooks.PORT_BINDING.hookName, PortBindingHookFactory.getPortBinderEmulator());
                             systemHooks.register(NatDetectionHooks.RequiredHooks.UPNP.hookName, UpnpHookFactory.getNoUpnp());
+
                             return new NatEmulatorHostComp.NatEmulatorHostInit(configCore, systemHooks,
                                     NodeHostComp.class, new NodeHostInit(configCore, systemHooks), natEInit);
                         }
@@ -208,6 +210,21 @@ public class ScenarioGen {
                         @Override
                         public DecoratedAddress getAddress() {
                             return selfAdr;
+                        }
+                    };
+                }
+            };
+
+    static Operation1<KillNodeCmd, Integer> killNode
+            = new Operation1<KillNodeCmd, Integer>() {
+
+                @Override
+                public KillNodeCmd generate(final Integer nodeId) {
+                    return new KillNodeCmd() {
+
+                        @Override
+                        public Integer getNodeId() {
+                            return nodeId;
                         }
                     };
                 }
@@ -226,7 +243,7 @@ public class ScenarioGen {
                 StochasticProcess stunServers = new StochasticProcess() {
                     {
                         eventInterArrivalTime(constant(1000));
-                        raise(4, startStunServer, new BasicIntSequentialDistribution(0));
+                        raise(4, startStunServer, new BasicIntSequentialDistribution(1));
                     }
                 };
                 StochasticProcess openNodes = new StochasticProcess() {
@@ -236,18 +253,26 @@ public class ScenarioGen {
                                 new ConstantDistribution<>(Integer.class, 0));
                     }
                 };
-                StochasticProcess nat1Nodes = new StochasticProcess() {
+                StochasticProcess startNatNodes1 = new StochasticProcess() {
                     {
                         eventInterArrivalTime(constant(1000));
                         raise(2, startNode, new BasicIntSequentialDistribution(200),
                                 new ConstantDistribution<>(Integer.class, 1));
                     }
                 };
+                StochasticProcess killNatNodes1 = new StochasticProcess() {
+                    {
+                        eventInterArrivalTime(constant(1000));
+                        raise(2, killNode, new BasicIntSequentialDistribution(200));
+                    }
+                };
+                
                 setup.start();
                 stunServers.startAfterTerminationOf(2000, setup);
                 openNodes.startAfterTerminationOf(10000, stunServers);
-                nat1Nodes.startAfterTerminationOf(10000, openNodes);
-                terminateAfterTerminationOf(100000, nat1Nodes);
+                startNatNodes1.startAfterTerminationOf(10000, openNodes);
+//                killNatNodes1.startAfterTerminationOf(5*30000, startNatNodes1);
+                terminateAfterTerminationOf(200000, startNatNodes1);
             }
         };
         return scen;

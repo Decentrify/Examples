@@ -27,16 +27,16 @@ import se.sics.kompics.Kompics;
 import se.sics.kompics.timer.Timer;
 import se.sics.kompics.timer.java.JavaTimer;
 import se.sics.ktoolbox.ipsolver.hooks.IpSolverHookFactory;
-import se.sics.ktoolbox.networkmngr.NetworkMngrHooks;
-import se.sics.ktoolbox.networkmngr.hooks.NetworkHookFactory;
-import se.sics.ktoolbox.networkmngr.hooks.PortBindingHookFactory;
 import se.sics.ktoolbox.overlaymngr.OMngrSerializerSetup;
+import se.sics.nat.hooks.BaseHooks;
 import se.sics.nat.stun.StunSerializerSetup;
 import se.sics.nat.stun.server.StunServerHostComp;
 import se.sics.nat.stun.server.StunServerHostComp.StunServerHostInit;
 import se.sics.p2ptoolbox.croupier.CroupierSerializerSetup;
 import se.sics.p2ptoolbox.util.config.KConfigCore;
 import se.sics.p2ptoolbox.util.nat.NatedTrait;
+import se.sics.p2ptoolbox.util.network.hooks.NetworkHookFactory;
+import se.sics.p2ptoolbox.util.network.hooks.PortBindingHookFactory;
 import se.sics.p2ptoolbox.util.network.impl.DecoratedAddress;
 import se.sics.p2ptoolbox.util.proxy.SystemHookSetup;
 import se.sics.p2ptoolbox.util.serializer.BasicSerializerSetup;
@@ -80,9 +80,9 @@ public class StunLauncher extends ComponentDefinition {
         }
 
         //hooks setup
-        systemHooks.register(NetworkMngrHooks.RequiredHooks.IP_SOLVER.hookName, IpSolverHookFactory.getIpSolver());
-        systemHooks.register(NetworkMngrHooks.RequiredHooks.PORT_BINDING.hookName, PortBindingHookFactory.getPortBinder());
-        systemHooks.register(NetworkMngrHooks.RequiredHooks.NETWORK.hookName, NetworkHookFactory.getNettyNetwork());
+        systemHooks.register(BaseHooks.RequiredHooks.IP_SOLVER.hookName, IpSolverHookFactory.getIpSolver());
+        systemHooks.register(BaseHooks.RequiredHooks.PORT_BINDING.hookName, PortBindingHookFactory.getPortBinder());
+        systemHooks.register(BaseHooks.RequiredHooks.NETWORK.hookName, NetworkHookFactory.getNettyNetwork());
     }
 
     public static void main(String[] args) {
